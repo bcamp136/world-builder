@@ -442,10 +442,10 @@ function App() {
                       Religion ({['belief-system', 'deity', 'spiritual-force', 'religious-institution', 'philosophy'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
                     </Tabs.Tab>
                     <Tabs.Tab value="conflict" leftSection={<IconSword size={16} />}>
-                      Conflict ({['war', 'conflict', 'military-force', 'strategy', 'threat', 'antagonist'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
+                      Conflict ({['war', 'conflict', 'military-force', 'strategy', 'threat'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
                     </Tabs.Tab>
                     <Tabs.Tab value="characters" leftSection={<IconUser size={16} />}>
-                      Characters ({['character', 'npc', 'important-figure', 'relationship'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
+                      Characters ({['character', 'npc', 'important-figure', 'relationship', 'antagonist', 'protagonist'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
                     </Tabs.Tab>
                     <Tabs.Tab value="economy" leftSection={<IconCoins size={16} />}>
                       Economy ({['trade-system', 'currency', 'resource', 'industry', 'economic-class'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})

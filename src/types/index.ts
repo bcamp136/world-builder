@@ -69,13 +69,14 @@ export type WorldElementType =
   | 'military-force'
   | 'strategy'
   | 'threat'
-  | 'antagonist'
   
   // 👥 Characters & Roles
   | 'character'
   | 'npc'
   | 'important-figure'
   | 'relationship'
+  | 'antagonist'
+  | 'protagonist'
   
   // 📦 Economy & Resources
   | 'trade-system'
