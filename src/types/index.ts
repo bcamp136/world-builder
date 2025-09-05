@@ -105,6 +105,23 @@ export interface WorldProject {
   description?: string
   createdAt: Date
   updatedAt: Date
+  storyContent?: string // Rich text content of the main story
+  storyLastAnalyzed?: Date // When the AI last analyzed the story
+}
+
+export interface StoryAnalysisResult {
+  elements: WorldElement[] // New or updated elements identified in the story
+  consistencyIssues: ConsistencyIssue[] // Issues found during analysis
+  lastAnalyzed: Date
+}
+
+export interface ConsistencyIssue {
+  type: 'character' | 'timeline' | 'setting' | 'plot' | 'general'
+  severity: 'info' | 'warning' | 'error'
+  description: string
+  elementIds?: string[] // IDs of related elements
+  textLocation?: string // Context or quote where the issue appears
+  suggestion?: string // AI suggestion to fix the issue
 }
 
 export interface AIProvider {

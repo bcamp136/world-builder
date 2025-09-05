@@ -4,7 +4,7 @@ import { createAnthropic } from '@ai-sdk/anthropic'
 import type { WorldElementType, AIPromptTemplate } from '../types'
 
 // Create AI provider instances with API keys
-function getProviders() {
+export function getProviders() {
   const openaiApiKey = import.meta.env.VITE_OPENAI_API_KEY
   const anthropicApiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
 

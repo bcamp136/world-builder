@@ -32,12 +32,14 @@ import {
   IconSword,
   IconCoins,
   IconSparkles,
-  IconShield
+  IconShield,
+  IconBook
 } from '@tabler/icons-react'
 import { WorldElementCard } from './components/WorldElementCard'
 import { WorldElementEditorContent } from './components/WorldElementEditorContent'
 import { AIPromptDialogContent } from './components/AIPromptDialogContent'
 import { FileManager } from './components/FileManager'
+import { StoryEditor } from './components/StoryEditor'
 import { 
   saveToStorage,
   createProject
@@ -52,6 +54,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('')
   const [typeFilter, setTypeFilter] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<string | null>('all')
+  const [activeView, setActiveView] = useState<'elements' | 'story'>('elements')
 
   // Initialize with a default project
   useEffect(() => {
@@ -178,6 +181,25 @@ function App() {
         ...currentProject,
         updatedAt: new Date()
       })
+    }
+  }
+  
+  const handleSaveStory = (storyContent: string) => {
+    if (currentProject) {
+      const updatedProject = {
+        ...currentProject,
+        storyContent,
+        updatedAt: new Date()
+      }
+      
+      setCurrentProject(updatedProject)
+      
+      // Save to storage
+      saveToStorage({
+        projects: [],
+        elements,
+        currentProjectId: updatedProject.id
+      }, updatedProject.id)
     }
   }
 
@@ -376,104 +398,152 @@ function App() {
               <>
                 {/* Header Actions */}
                 <Group justify="space-between" align="center">
-                  <Title order={1}>World Elements</Title>
+                  <Title order={1}>{activeView === 'elements' ? 'World Elements' : 'Story Editor'}</Title>
                   <Group>
-                    <Button 
-                      leftSection={<IconPlus size={16} />}
-                      onClick={handleNewElement}
-                    >
-                      Create New
-                    </Button>
-                    <Button 
-                      variant="light"
-                      leftSection={<IconBrain size={16} />}
-                      onClick={openAIDialog}
-                    >
-                      AI Generate
-                    </Button>
+                    <Button.Group>
+                      <Button 
+                        variant={activeView === 'elements' ? 'filled' : 'light'}
+                        leftSection={<IconWorldWww size={16} />}
+                        onClick={() => setActiveView('elements')}
+                      >
+                        Elements
+                      </Button>
+                      <Button 
+                        variant={activeView === 'story' ? 'filled' : 'light'}
+                        leftSection={<IconBook size={16} />}
+                        onClick={() => setActiveView('story')}
+                      >
+                        Story
+                      </Button>
+                    </Button.Group>
+                    
+                    {activeView === 'elements' && (
+                      <>
+                        <Button 
+                          leftSection={<IconPlus size={16} />}
+                          onClick={handleNewElement}
+                        >
+                          Create New
+                        </Button>
+                        <Button 
+                          variant="light"
+                          leftSection={<IconBrain size={16} />}
+                          onClick={openAIDialog}
+                        >
+                          AI Generate
+                        </Button>
+                      </>
+                    )}
                   </Group>
                 </Group>
 
-                {/* Search and Filters */}
-                <Group>
-                  <TextInput
-                    placeholder="Search elements..."
-                    leftSection={<IconSearch size={16} />}
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.currentTarget.value)}
-                    style={{ flex: 1 }}
-                  />
-                  <Select
-                    placeholder="Filter by type"
-                    leftSection={<IconFilter size={16} />}
-                    data={typeOptions}
-                    value={typeFilter}
-                    onChange={setTypeFilter}
-                    clearable
-                    w={200}
-                  />
-                </Group>
+                {activeView === 'elements' && (
+                  <>
+                    {/* Search and Filters */}
+                    <Group>
+                      <TextInput
+                        placeholder="Search elements..."
+                        leftSection={<IconSearch size={16} />}
+                        value={searchQuery}
+                        onChange={(event) => setSearchQuery(event.currentTarget.value)}
+                        style={{ flex: 1 }}
+                      />
+                      <Select
+                        placeholder="Filter by type"
+                        leftSection={<IconFilter size={16} />}
+                        data={typeOptions}
+                        value={typeFilter}
+                        onChange={setTypeFilter}
+                        clearable
+                        w={200}
+                      />
+                    </Group>
 
-                {/* Element Type Tabs */}
-                <Tabs value={activeTab} onChange={setActiveTab}>
-                  <Tabs.List>
-                    <Tabs.Tab value="all" leftSection={<IconWorldWww size={16} />}>
-                      All ({elements.length})
-                    </Tabs.Tab>
-                    <Tabs.Tab value="geography" leftSection={<IconMountain size={16} />}>
-                      Geography ({['landscape', 'climate', 'map', 'nation', 'city', 'landmark'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                    </Tabs.Tab>
-                    <Tabs.Tab value="cultures" leftSection={<IconUser size={16} />}>
-                      Cultures ({['race', 'species', 'social-structure', 'language', 'tradition', 'custom'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                    </Tabs.Tab>
-                    <Tabs.Tab value="politics" leftSection={<IconCrown size={16} />}>
-                      Politics ({['government', 'ruler', 'faction', 'organization', 'law', 'justice-system'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                    </Tabs.Tab>
-                    <Tabs.Tab value="history" leftSection={<IconSword size={16} />}>
-                      History ({['historical-event', 'legend', 'myth', 'hero', 'creation-story', 'prophecy'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                    </Tabs.Tab>
-                    <Tabs.Tab value="magic" leftSection={<IconWand size={16} />}>
-                      Magic/Tech ({['power-system', 'magic-system', 'technology', 'artifact', 'invention', 'magical-rule'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                    </Tabs.Tab>
-                    <Tabs.Tab value="creatures" leftSection={<IconShield size={16} />}>
-                      Creatures ({['intelligent-species', 'creature', 'monster', 'supernatural-entity'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                    </Tabs.Tab>
-                    <Tabs.Tab value="religion" leftSection={<IconSparkles size={16} />}>
-                      Religion ({['belief-system', 'deity', 'spiritual-force', 'religious-institution', 'philosophy'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                    </Tabs.Tab>
-                    <Tabs.Tab value="conflict" leftSection={<IconSword size={16} />}>
-                      Conflict ({['war', 'conflict', 'military-force', 'strategy', 'threat'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                    </Tabs.Tab>
-                    <Tabs.Tab value="characters" leftSection={<IconUser size={16} />}>
-                      Characters ({['character', 'npc', 'important-figure', 'relationship', 'antagonist', 'protagonist'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                    </Tabs.Tab>
-                    <Tabs.Tab value="economy" leftSection={<IconCoins size={16} />}>
-                      Economy ({['trade-system', 'currency', 'resource', 'industry', 'economic-class'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                    </Tabs.Tab>
-                    <Tabs.Tab value="general" leftSection={<IconNote size={16} />}>
-                      General ({['note', 'timeline', 'plot', 'lore'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                    </Tabs.Tab>
-                  </Tabs.List>
-                </Tabs>
+                    {/* Element Type Tabs */}
+                    <Tabs value={activeTab} onChange={setActiveTab}>
+                      <Tabs.List>
+                        <Tabs.Tab value="all" leftSection={<IconWorldWww size={16} />}>
+                          All ({elements.length})
+                        </Tabs.Tab>
+                        <Tabs.Tab value="geography" leftSection={<IconMountain size={16} />}>
+                          Geography ({['landscape', 'climate', 'map', 'nation', 'city', 'landmark'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
+                        </Tabs.Tab>
+                        <Tabs.Tab value="cultures" leftSection={<IconUser size={16} />}>
+                          Cultures ({['race', 'species', 'social-structure', 'language', 'tradition', 'custom'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
+                        </Tabs.Tab>
+                        <Tabs.Tab value="politics" leftSection={<IconCrown size={16} />}>
+                          Politics ({['government', 'ruler', 'faction', 'organization', 'law', 'justice-system'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
+                        </Tabs.Tab>
+                        <Tabs.Tab value="history" leftSection={<IconSword size={16} />}>
+                          History ({['historical-event', 'legend', 'myth', 'hero', 'creation-story', 'prophecy'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
+                        </Tabs.Tab>
+                        <Tabs.Tab value="magic" leftSection={<IconWand size={16} />}>
+                          Magic/Tech ({['power-system', 'magic-system', 'technology', 'artifact', 'invention', 'magical-rule'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
+                        </Tabs.Tab>
+                        <Tabs.Tab value="creatures" leftSection={<IconShield size={16} />}>
+                          Creatures ({['intelligent-species', 'creature', 'monster', 'supernatural-entity'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
+                        </Tabs.Tab>
+                        <Tabs.Tab value="religion" leftSection={<IconSparkles size={16} />}>
+                          Religion ({['belief-system', 'deity', 'spiritual-force', 'religious-institution', 'philosophy'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
+                        </Tabs.Tab>
+                        <Tabs.Tab value="conflict" leftSection={<IconSword size={16} />}>
+                          Conflict ({['war', 'conflict', 'military-force', 'strategy', 'threat'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
+                        </Tabs.Tab>
+                        <Tabs.Tab value="characters" leftSection={<IconUser size={16} />}>
+                          Characters ({['character', 'npc', 'important-figure', 'relationship', 'antagonist', 'protagonist'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
+                        </Tabs.Tab>
+                        <Tabs.Tab value="economy" leftSection={<IconCoins size={16} />}>
+                          Economy ({['trade-system', 'currency', 'resource', 'industry', 'economic-class'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
+                        </Tabs.Tab>
+                        <Tabs.Tab value="general" leftSection={<IconNote size={16} />}>
+                          General ({['note', 'timeline', 'plot', 'lore'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
+                        </Tabs.Tab>
+                      </Tabs.List>
+                    </Tabs>
+                    
+                    {/* Elements Grid */}
+                    {filteredElements.length === 0 ? (
+                      <EmptyState />
+                    ) : (
+                      <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
+                        {filteredElements.map((element) => (
+                          <WorldElementCard
+                            key={element.id}
+                            element={element}
+                            onEdit={handleEditElement}
+                            onDelete={handleDeleteElement}
+                            onDuplicate={handleDuplicateElement}
+                            onConnect={handleConnectElement}
+                          />
+                        ))}
+                      </SimpleGrid>
+                    )}
+                  </>
+                )}
+                
+                {activeView === 'story' && (
+                  <StoryEditor 
+                    project={currentProject}
+                    elements={elements}
+                    onSave={handleSaveStory}
+                    onAddElements={(newElements) => {
+                      setElements(prev => [...prev, ...newElements])
+                    }}
+                    onUpdateElements={(updatedElements) => {
+                      setElements(prev => 
+                        prev.map(el => {
+                          const updated = updatedElements.find(u => u.id === el.id)
+                          return updated ? { ...el, ...updated } : el
+                        })
+                      )
+                    }}
+                  />
+                )}
               </>
             )}
-
-            {/* Elements Grid */}
-            {!currentProject || filteredElements.length === 0 ? (
+            
+            {!currentProject && (
               <EmptyState />
-            ) : (
-              <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
-                {filteredElements.map((element) => (
-                  <WorldElementCard
-                    key={element.id}
-                    element={element}
-                    onEdit={handleEditElement}
-                    onDelete={handleDeleteElement}
-                    onDuplicate={handleDuplicateElement}
-                    onConnect={handleConnectElement}
-                  />
-                ))}
-              </SimpleGrid>
             )}
           </Stack>
         </Container>

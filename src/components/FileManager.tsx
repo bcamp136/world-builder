@@ -84,6 +84,8 @@ export function FileManager({
             id: projectData.id,
             name: projectData.name,
             description: projectData.description,
+            storyContent: projectData.storyContent,
+            storyLastAnalyzed: projectData.storyLastAnalyzed,
             createdAt: projectData.createdAt,
             updatedAt: projectData.updatedAt
           }
@@ -100,6 +102,8 @@ export function FileManager({
           id: projectData.id,
           name: projectData.name,
           description: projectData.description,
+          storyContent: projectData.storyContent,
+          storyLastAnalyzed: projectData.storyLastAnalyzed,
           createdAt: projectData.createdAt,
           updatedAt: projectData.updatedAt
         }
@@ -117,6 +121,8 @@ export function FileManager({
         id: currentProject.id,
         name: currentProject.name,
         description: currentProject.description,
+        storyContent: currentProject.storyContent,
+        storyLastAnalyzed: currentProject.storyLastAnalyzed,
         createdAt: currentProject.createdAt,
         updatedAt: new Date(),
         elements,
@@ -142,6 +148,8 @@ export function FileManager({
       id: currentProject.id,
       name: currentProject.name,
       description: currentProject.description,
+      storyContent: currentProject.storyContent,
+      storyLastAnalyzed: currentProject.storyLastAnalyzed,
       createdAt: currentProject.createdAt,
       updatedAt: new Date(),
       elements,

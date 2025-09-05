@@ -13,6 +13,8 @@ export interface ProjectData {
   createdAt: Date
   updatedAt: Date
   elements: WorldElement[]
+  storyContent?: string
+  storyLastAnalyzed?: Date
   version: string
 }
 
@@ -104,6 +106,9 @@ export async function loadProjectFromFile(): Promise<ProjectData | null> {
     // Convert date strings back to Date objects
     projectData.createdAt = new Date(projectData.createdAt)
     projectData.updatedAt = new Date(projectData.updatedAt)
+    if (projectData.storyLastAnalyzed) {
+      projectData.storyLastAnalyzed = new Date(projectData.storyLastAnalyzed)
+    }
     if (projectData.elements) {
       projectData.elements.forEach((element: WorldElement) => {
         element.createdAt = new Date(element.createdAt)
@@ -150,6 +155,9 @@ export function uploadProjectFile(onLoad: (projectData: ProjectData) => void): v
           // Convert date strings back to Date objects
           projectData.createdAt = new Date(projectData.createdAt)
           projectData.updatedAt = new Date(projectData.updatedAt)
+          if (projectData.storyLastAnalyzed) {
+            projectData.storyLastAnalyzed = new Date(projectData.storyLastAnalyzed)
+          }
           if (projectData.elements) {
             projectData.elements.forEach((element: WorldElement) => {
               element.createdAt = new Date(element.createdAt)
@@ -188,6 +196,8 @@ export async function saveToStorage(data: StoredData, projectId?: string): Promi
       createdAt: project.createdAt,
       updatedAt: new Date(),
       elements: data.elements,
+      storyContent: project.storyContent,
+      storyLastAnalyzed: project.storyLastAnalyzed,
       version: '1.0.0'
     }
     
@@ -248,6 +258,8 @@ export function useAutoSave(elements: WorldElement[], currentProject?: WorldProj
         createdAt: currentProject.createdAt,
         updatedAt: new Date(),
         elements,
+        storyContent: currentProject.storyContent,
+        storyLastAnalyzed: currentProject.storyLastAnalyzed,
         version: '1.0.0'
       }
       
