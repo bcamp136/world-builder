@@ -25,14 +25,9 @@ import {
   IconFilter,
   IconWorldWww,
   IconUser,
-  IconNote,
   IconMountain,
-  IconCrown,
-  IconWand,
   IconSword,
-  IconCoins,
   IconSparkles,
-  IconShield,
   IconBook
 } from '@tabler/icons-react'
 import { WorldElementCard } from './components/WorldElementCard'
@@ -83,20 +78,14 @@ function App() {
       
       const matchesType = !typeFilter || typeFilter === 'all' || element.type === typeFilter
       
-      // Define category groups
+      // Define category groups using the simplified types
       const categoryGroups: Record<string, WorldElementType[]> = {
         all: [],
-        geography: ['landscape', 'climate', 'map', 'nation', 'city', 'landmark'],
-        cultures: ['race', 'species', 'social-structure', 'language', 'tradition', 'custom'],
-        politics: ['government', 'ruler', 'faction', 'organization', 'law', 'justice-system'],
-        history: ['historical-event', 'legend', 'myth', 'hero', 'creation-story', 'prophecy'],
-        magic: ['power-system', 'magic-system', 'technology', 'artifact', 'invention', 'magical-rule'],
-        creatures: ['intelligent-species', 'creature', 'monster', 'supernatural-entity'],
-        religion: ['belief-system', 'deity', 'spiritual-force', 'religious-institution', 'philosophy'],
-        conflict: ['war', 'conflict', 'military-force', 'strategy', 'threat', 'antagonist'],
-        characters: ['character', 'npc', 'important-figure', 'relationship'],
-        economy: ['trade-system', 'currency', 'resource', 'industry', 'economic-class'],
-        general: ['note', 'timeline', 'plot', 'lore']
+        characters: ['character'],
+        places: ['place'],
+        objects: ['object'],
+        events: ['event'],
+        concepts: ['concept']
       }
       
       const matchesTab = activeTab === 'all' || 
@@ -465,38 +454,20 @@ function App() {
                         <Tabs.Tab value="all" leftSection={<IconWorldWww size={16} />}>
                           All ({elements.length})
                         </Tabs.Tab>
-                        <Tabs.Tab value="geography" leftSection={<IconMountain size={16} />}>
-                          Geography ({['landscape', 'climate', 'map', 'nation', 'city', 'landmark'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                        </Tabs.Tab>
-                        <Tabs.Tab value="cultures" leftSection={<IconUser size={16} />}>
-                          Cultures ({['race', 'species', 'social-structure', 'language', 'tradition', 'custom'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                        </Tabs.Tab>
-                        <Tabs.Tab value="politics" leftSection={<IconCrown size={16} />}>
-                          Politics ({['government', 'ruler', 'faction', 'organization', 'law', 'justice-system'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                        </Tabs.Tab>
-                        <Tabs.Tab value="history" leftSection={<IconSword size={16} />}>
-                          History ({['historical-event', 'legend', 'myth', 'hero', 'creation-story', 'prophecy'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                        </Tabs.Tab>
-                        <Tabs.Tab value="magic" leftSection={<IconWand size={16} />}>
-                          Magic/Tech ({['power-system', 'magic-system', 'technology', 'artifact', 'invention', 'magical-rule'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                        </Tabs.Tab>
-                        <Tabs.Tab value="creatures" leftSection={<IconShield size={16} />}>
-                          Creatures ({['intelligent-species', 'creature', 'monster', 'supernatural-entity'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                        </Tabs.Tab>
-                        <Tabs.Tab value="religion" leftSection={<IconSparkles size={16} />}>
-                          Religion ({['belief-system', 'deity', 'spiritual-force', 'religious-institution', 'philosophy'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                        </Tabs.Tab>
-                        <Tabs.Tab value="conflict" leftSection={<IconSword size={16} />}>
-                          Conflict ({['war', 'conflict', 'military-force', 'strategy', 'threat'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
-                        </Tabs.Tab>
                         <Tabs.Tab value="characters" leftSection={<IconUser size={16} />}>
-                          Characters ({['character', 'npc', 'important-figure', 'relationship', 'antagonist', 'protagonist'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
+                          Characters ({elementStats['character'] || 0})
                         </Tabs.Tab>
-                        <Tabs.Tab value="economy" leftSection={<IconCoins size={16} />}>
-                          Economy ({['trade-system', 'currency', 'resource', 'industry', 'economic-class'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
+                        <Tabs.Tab value="places" leftSection={<IconMountain size={16} />}>
+                          Places ({elementStats['place'] || 0})
                         </Tabs.Tab>
-                        <Tabs.Tab value="general" leftSection={<IconNote size={16} />}>
-                          General ({['note', 'timeline', 'plot', 'lore'].reduce((acc, type) => acc + (elementStats[type] || 0), 0)})
+                        <Tabs.Tab value="objects" leftSection={<IconSparkles size={16} />}>
+                          Objects ({elementStats['object'] || 0})
+                        </Tabs.Tab>
+                        <Tabs.Tab value="events" leftSection={<IconSword size={16} />}>
+                          Events ({elementStats['event'] || 0})
+                        </Tabs.Tab>
+                        <Tabs.Tab value="concepts" leftSection={<IconBook size={16} />}>
+                          Concepts ({elementStats['concept'] || 0})
                         </Tabs.Tab>
                       </Tabs.List>
                     </Tabs>

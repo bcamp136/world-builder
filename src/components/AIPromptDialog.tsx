@@ -14,7 +14,7 @@ import {
 } from '@mantine/core'
 import { IconBrain, IconInfoCircle, IconWand } from '@tabler/icons-react'
 import { notifications } from '@mantine/notifications'
-import { promptTemplates, generateWorldElement, isAIConfigured } from '../utils/ai'
+import { promptTemplates, generateWorldElement, isAIConfigured } from '../utils/ai-new'
 import type { WorldElementType } from '../types'
 
 interface AIPromptDialogProps {

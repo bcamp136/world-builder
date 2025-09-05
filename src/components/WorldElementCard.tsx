@@ -8,32 +8,9 @@ import {
   IconUser,
   IconMapPin,
   IconCalendar,
-  IconBook,
-  IconScript,
-  IconWand,
-  IconBuilding,
-  IconWorld,
-  IconBookmarks,
-  IconLanguage,
-  IconClock,
   IconNote,
-  IconMountain,
-  IconCloudRain,
   IconDiamond,
-  IconCrown,
-  IconUsers,
-  IconShield,
-  IconSparkles,
-  IconSword,
-  IconFlame,
-  IconGhost,
-  IconEye,
-  IconCoins,
-  IconTruck,
-  IconScale,
-  IconGavel,
-  IconClipboard,
-  IconSettings
+  IconSparkles
 } from '@tabler/icons-react'
 import type { WorldElement } from '../types'
 
@@ -46,167 +23,19 @@ interface WorldElementCardProps {
 }
 
 const elementIcons = {
-  // 🌍 Geography & Setting
-  landscape: IconMountain,
-  climate: IconCloudRain,
-  map: IconWorld,
-  nation: IconCrown,
-  city: IconBuilding,
-  landmark: IconMapPin,
-  
-  // 🧑‍🤝‍🧑 Cultures & Societies
-  race: IconUsers,
-  species: IconUser,
-  'social-structure': IconUsers,
-  language: IconLanguage,
-  tradition: IconBookmarks,
-  custom: IconBook,
-  
-  // 🏛 Politics & Power
-  government: IconCrown,
-  ruler: IconUser,
-  faction: IconShield,
-  organization: IconBuilding,
-  law: IconGavel,
-  'justice-system': IconScale,
-  
-  // 📜 History & Mythology
-  'historical-event': IconCalendar,
-  legend: IconBook,
-  myth: IconBookmarks,
-  hero: IconUser,
-  'creation-story': IconSparkles,
-  prophecy: IconEye,
-  
-  // 🧙 Magic or Technology
-  'power-system': IconSparkles,
-  'magic-system': IconWand,
-  technology: IconSettings,
-  artifact: IconDiamond,
-  invention: IconSettings,
-  'magical-rule': IconBook,
-  
-  // 🐉 Creatures & Beings
-  'intelligent-species': IconUsers,
-  creature: IconUser,
-  monster: IconFlame,
-  'supernatural-entity': IconGhost,
-  
-  // 🔮 Religion & Philosophy
-  'belief-system': IconBookmarks,
-  deity: IconSparkles,
-  'spiritual-force': IconGhost,
-  'religious-institution': IconBuilding,
-  philosophy: IconBook,
-  
-  // ⚔️ Conflict & Warfare
-  war: IconSword,
-  conflict: IconFlame,
-  'military-force': IconShield,
-  strategy: IconClipboard,
-  threat: IconFlame,
-  antagonist: IconUser,
-  
-  // 👥 Characters & Roles
   character: IconUser,
-  npc: IconUser,
-  'important-figure': IconCrown,
-  relationship: IconUsers,
-  
-  // 📦 Economy & Resources
-  'trade-system': IconTruck,
-  currency: IconCoins,
-  resource: IconDiamond,
-  industry: IconBuilding,
-  'economic-class': IconUsers,
-  
-  // 📝 General & Legacy
-  note: IconNote,
-  timeline: IconClock,
-  plot: IconScript,
-  lore: IconBook
+  place: IconMapPin,
+  object: IconDiamond,
+  event: IconCalendar,
+  concept: IconSparkles
 }
 
 const elementColors = {
-  // 🌍 Geography & Setting
-  landscape: 'green',
-  climate: 'cyan',
-  map: 'teal',
-  nation: 'violet',
-  city: 'blue',
-  landmark: 'lime',
-  
-  // 🧑‍🤝‍🧑 Cultures & Societies
-  race: 'orange',
-  species: 'teal',
-  'social-structure': 'blue',
-  language: 'indigo',
-  tradition: 'grape',
-  custom: 'violet',
-  
-  // 🏛 Politics & Power
-  government: 'violet',
-  ruler: 'yellow',
-  faction: 'red',
-  organization: 'blue',
-  law: 'blue',
-  'justice-system': 'indigo',
-  
-  // 📜 History & Mythology
-  'historical-event': 'orange',
-  legend: 'purple',
-  myth: 'violet',
-  hero: 'yellow',
-  'creation-story': 'pink',
-  prophecy: 'indigo',
-  
-  // 🧙 Magic or Technology
-  'power-system': 'pink',
-  'magic-system': 'violet',
-  technology: 'gray',
-  artifact: 'grape',
-  invention: 'cyan',
-  'magical-rule': 'purple',
-  
-  // 🐉 Creatures & Beings
-  'intelligent-species': 'teal',
-  creature: 'green',
-  monster: 'red',
-  'supernatural-entity': 'dark',
-  
-  // 🔮 Religion & Philosophy
-  'belief-system': 'grape',
-  deity: 'yellow',
-  'spiritual-force': 'cyan',
-  'religious-institution': 'violet',
-  philosophy: 'indigo',
-  
-  // ⚔️ Conflict & Warfare
-  war: 'red',
-  conflict: 'orange',
-  'military-force': 'red',
-  strategy: 'dark',
-  threat: 'red',
-  antagonist: 'dark',
-  
-  // 👥 Characters & Roles
   character: 'blue',
-  npc: 'cyan',
-  'important-figure': 'yellow',
-  relationship: 'pink',
-  
-  // 📦 Economy & Resources
-  'trade-system': 'orange',
-  currency: 'yellow',
-  resource: 'lime',
-  industry: 'gray',
-  'economic-class': 'blue',
-  
-  // 📝 General & Legacy
-  note: 'dark',
-  timeline: 'gray',
-  plot: 'red',
-  lore: 'purple'
+  place: 'green',
+  object: 'violet',
+  event: 'orange',
+  concept: 'teal'
 }
 
 export function WorldElementCard({ element, onEdit, onDelete, onDuplicate, onConnect }: WorldElementCardProps) {

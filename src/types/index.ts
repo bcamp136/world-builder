@@ -10,86 +10,12 @@ export interface WorldElement {
 }
 
 export type WorldElementType = 
-  // 🌍 Geography & Setting
-  | 'landscape'
-  | 'climate'
-  | 'map'
-  | 'nation'
-  | 'city'
-  | 'landmark'
-  
-  // 🧑‍🤝‍🧑 Cultures & Societies
-  | 'race'
-  | 'species'
-  | 'social-structure'
-  | 'language'
-  | 'tradition'
-  | 'custom'
-  
-  // 🏛 Politics & Power
-  | 'government'
-  | 'ruler'
-  | 'faction'
-  | 'organization'
-  | 'law'
-  | 'justice-system'
-  
-  // 📜 History & Mythology
-  | 'historical-event'
-  | 'legend'
-  | 'myth'
-  | 'hero'
-  | 'creation-story'
-  | 'prophecy'
-  
-  // 🧙 Magic or Technology
-  | 'power-system'
-  | 'magic-system'
-  | 'technology'
-  | 'artifact'
-  | 'invention'
-  | 'magical-rule'
-  
-  // 🐉 Creatures & Beings
-  | 'intelligent-species'
-  | 'creature'
-  | 'monster'
-  | 'supernatural-entity'
-  
-  // 🔮 Religion & Philosophy
-  | 'belief-system'
-  | 'deity'
-  | 'spiritual-force'
-  | 'religious-institution'
-  | 'philosophy'
-  
-  // ⚔️ Conflict & Warfare
-  | 'war'
-  | 'conflict'
-  | 'military-force'
-  | 'strategy'
-  | 'threat'
-  
-  // 👥 Characters & Roles
-  | 'character'
-  | 'npc'
-  | 'important-figure'
-  | 'relationship'
-  | 'antagonist'
-  | 'protagonist'
-  
-  // 📦 Economy & Resources
-  | 'trade-system'
-  | 'currency'
-  | 'resource'
-  | 'industry'
-  | 'economic-class'
-  
-  // 📝 General & Legacy
-  | 'note'
-  | 'timeline'
-  | 'plot'
-  | 'lore'
+  // Core element types for a simplified categorization
+  | 'character'   // People, beings, and characters in the story
+  | 'place'       // Locations, settings, and environments
+  | 'object'      // Items, artifacts, and physical things
+  | 'event'       // Happenings, conflicts, and occurrences
+  | 'concept'     // Ideas, systems, and abstract notions
 
 export interface AIPromptTemplate {
   id: string

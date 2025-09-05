@@ -16,136 +16,49 @@ export function getProviders() {
 
 // Pre-defined prompt templates for different world building elements
 export const promptTemplates: AIPromptTemplate[] = [
-  // 🌍 Geography & Setting
+  // Characters
   {
-    id: 'landscape-terrain',
-    name: 'Landscape & Terrain',
-    type: 'landscape',
-    prompt: 'Create a detailed landscape including: terrain features, natural formations, geographical boundaries, notable landmarks, environmental hazards, and how it affects inhabitants. Landscape concept: {userInput}',
-    description: 'Design diverse terrains and natural environments'
+    id: 'character',
+    name: 'Character',
+    type: 'character',
+    prompt: 'Create a detailed character including: appearance, personality, background, motivations, relationships, strengths and weaknesses. Character concept: {userInput}',
+    description: 'Design characters, beings, and creatures'
   },
+  
+  // Places
   {
-    id: 'climate-weather',
-    name: 'Climate & Weather',
-    type: 'climate',
-    prompt: 'Develop a climate system with: seasonal patterns, weather phenomena, temperature ranges, precipitation, how it affects life and culture, and any unique weather events. Climate concept: {userInput}',
-    description: 'Create weather systems and seasonal cycles'
+    id: 'place',
+    name: 'Place',
+    type: 'place',
+    prompt: 'Create a detailed place including: location, environment, notable features, inhabitants, history, and cultural significance. Place concept: {userInput}',
+    description: 'Design locations, settings, and environments'
   },
+  
+  // Objects
   {
-    id: 'map-region',
-    name: 'Map & Geography',
-    type: 'map',
-    prompt: 'Design a geographical map including: borders and boundaries, major features, settlements, trade routes, strategic locations, and how geography influences politics and culture. Map concept: {userInput}',
-    description: 'Create detailed geographical layouts'
+    id: 'object',
+    name: 'Object',
+    type: 'object',
+    prompt: 'Create a detailed object including: appearance, materials, function, history, significance, and who might use or value it. Object concept: {userInput}',
+    description: 'Design items, artifacts, and physical things'
   },
+  
+  // Events
   {
-    id: 'nation-country',
-    name: 'Nation & Country',
-    type: 'nation',
-    prompt: 'Build a nation with: borders and territory, government structure, population and demographics, culture and values, relationships with neighbors, and national identity. Nation concept: {userInput}',
-    description: 'Design countries and political entities'
+    id: 'event',
+    name: 'Event',
+    type: 'event',
+    prompt: 'Create a detailed event including: what happened, when and where it occurred, participants, causes, consequences, and historical significance. Event concept: {userInput}',
+    description: 'Design events, happenings, and occurrences'
   },
+  
+  // Concepts
   {
-    id: 'city-settlement',
-    name: 'City & Settlement',
-    type: 'city',
-    prompt: 'Create a city including: location and layout, architecture and districts, population and demographics, governance, economy, notable locations, and cultural significance. City concept: {userInput}',
-    description: 'Design urban centers and settlements'
-  },
-  {
-    id: 'landmark-monument',
-    name: 'Landmark & Monument',
-    type: 'landmark',
-    prompt: 'Design a landmark with: physical description, historical significance, location and accessibility, cultural importance, legends or stories, and current state. Landmark concept: {userInput}',
-    description: 'Create significant geographical or cultural markers'
-  },
-
-  // 🧑‍🤝‍🧑 Cultures & Societies
-  {
-    id: 'race-people',
-    name: 'Race & People',
-    type: 'race',
-    prompt: 'Create a race or people including: physical characteristics, cultural traits, history and origins, society structure, relationships with other races, and unique abilities or perspectives. Race concept: {userInput}',
-    description: 'Design distinct peoples and ethnicities'
-  },
-  {
-    id: 'species-sapient',
-    name: 'Sapient Species',
-    type: 'species',
-    prompt: 'Develop a sapient species with: biological traits, intelligence and consciousness, social behavior, communication methods, environmental adaptations, and interaction with other species. Species concept: {userInput}',
-    description: 'Create intelligent non-human species'
-  },
-  {
-    id: 'social-structure-hierarchy',
-    name: 'Social Structure',
-    type: 'social-structure',
-    prompt: 'Design a social structure including: hierarchy levels, class mobility, roles and responsibilities, power distribution, social norms, and how structure affects daily life. Structure concept: {userInput}',
-    description: 'Build social hierarchies and class systems'
-  },
-  {
-    id: 'language-communication',
-    name: 'Language & Communication',
-    type: 'language',
-    prompt: 'Create a language with: linguistic family, writing system, grammar basics, cultural expressions, regional dialects, formal vs informal usage, and role in society. Language concept: {userInput}',
-    description: 'Develop languages and communication systems'
-  },
-  {
-    id: 'tradition-cultural',
-    name: 'Cultural Tradition',
-    type: 'tradition',
-    prompt: 'Develop a tradition including: origins and meaning, how it\'s practiced, who participates, variations by region, significance in daily life, and how it\'s evolving. Tradition concept: {userInput}',
-    description: 'Create cultural practices and ceremonies'
-  },
-  {
-    id: 'custom-practice',
-    name: 'Custom & Practice',
-    type: 'custom',
-    prompt: 'Create a custom including: purpose and function, social context, participants and roles, variations and adaptations, enforcement or encouragement, and cultural significance. Custom concept: {userInput}',
-    description: 'Design social customs and behavioral norms'
-  },
-
-  // 🏛 Politics & Power
-  {
-    id: 'government-system',
-    name: 'Government System',
-    type: 'government',
-    prompt: 'Design a government including: structure and branches, leadership selection, decision-making processes, citizen participation, checks and balances, and sources of legitimacy. Government concept: {userInput}',
-    description: 'Create political systems and ruling structures'
-  },
-  {
-    id: 'ruler-leader',
-    name: 'Ruler & Leader',
-    type: 'ruler',
-    prompt: 'Create a ruler including: background and rise to power, leadership style, political challenges, relationships with subjects, goals and motivations, and legacy. Ruler concept: {userInput}',
-    description: 'Design political leaders and authority figures'
-  },
-  {
-    id: 'faction-group',
-    name: 'Faction & Group',
-    type: 'faction',
-    prompt: 'Develop a faction with: ideology and goals, membership and recruitment, leadership structure, resources and capabilities, allies and enemies, and methods of operation. Faction concept: {userInput}',
-    description: 'Create political or ideological groups'
-  },
-  {
-    id: 'organization-institution',
-    name: 'Organization & Institution',
-    type: 'organization',
-    prompt: 'Create an organization including: purpose and mission, structure and hierarchy, membership requirements, resources and funding, influence and reach, and internal politics. Organization concept: {userInput}',
-    description: 'Design formal institutions and groups'
-  },
-  {
-    id: 'law-legal',
-    name: 'Law & Legal Code',
-    type: 'law',
-    prompt: 'Create a legal system including: fundamental principles, specific laws and regulations, enforcement mechanisms, penalties and punishments, legal procedures, and how it reflects society\'s values. Law concept: {userInput}',
-    description: 'Design legal frameworks and specific laws'
-  },
-  {
-    id: 'justice-system-courts',
-    name: 'Justice System',
-    type: 'justice-system',
-    prompt: 'Develop a justice system with: court structure, legal procedures, types of punishment, appeals processes, law enforcement, and how different classes are treated. Justice concept: {userInput}',
-    description: 'Create systems for maintaining order and resolving disputes'
+    id: 'concept',
+    name: 'Concept',
+    type: 'concept',
+    prompt: 'Create a detailed concept including: definition, origins, principles, how it works, cultural impact, and practical applications. Concept idea: {userInput}',
+    description: 'Design systems, ideas, and abstract notions'
   },
 
   // 📜 History & Mythology

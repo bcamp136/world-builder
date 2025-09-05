@@ -17,6 +17,7 @@ import { useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import { notifications } from '@mantine/notifications'
+import { modals } from '@mantine/modals'
 import { 
   IconBrain, 
   IconDeviceFloppy, 
@@ -28,7 +29,8 @@ import {
   IconListDetails,
   IconUser,
   IconCalendarTime,
-  IconMapPin
+  IconMapPin,
+  IconWand
 } from '@tabler/icons-react'
 import type { WorldElement, WorldProject, ConsistencyIssue } from '../types'
 import { analyzeStory } from '../utils/story-analysis'
@@ -225,6 +227,97 @@ export function StoryEditor({
       color: 'green',
     })
   }, [discoveredElements, elements, onAddElements, onUpdateElements, setActiveTab])
+  
+  // Handle loading Alice in Wonderland demo text
+  const [isLoadingDemo, setIsLoadingDemo] = useState(false)
+  
+  const loadDemoText = useCallback(async () => {
+    setIsLoadingDemo(true)
+    
+    try {
+      // Import the local Alice in Wonderland text file
+      const { aliceInWonderland } = await import('../assets/alice')
+      
+      // Use the imported text
+      let text = aliceInWonderland
+      
+      // Clean up the text a bit - remove Project Gutenberg headers and footers
+      // Find the actual start of the book content
+      const startMarker = "ALICE'S ADVENTURES IN WONDERLAND"
+      const endMarker = "*** END OF THE PROJECT GUTENBERG EBOOK"
+      
+      const startIndex = text.indexOf(startMarker)
+      const endIndex = text.indexOf(endMarker)
+      
+      if (startIndex !== -1 && endIndex !== -1) {
+        text = text.slice(startIndex, endIndex).trim()
+      }
+      
+      // Format chapter titles with h2 tags
+      text = text.replace(/CHAPTER [IVX]+\. [^\n]+/g, match => `\n\n<h2>${match}</h2>\n\n`);
+      
+      // Convert plain text to HTML paragraphs for the editor
+      const htmlContent = text
+        .split('\n\n')
+        .map(paragraph => paragraph.trim())
+        .filter(paragraph => paragraph.length > 0)
+        .map(paragraph => {
+          // Skip paragraphs already wrapped in HTML tags
+          if (paragraph.startsWith('<')) return paragraph;
+          return `<p>${paragraph.replace(/\n/g, ' ')}</p>`;
+        })
+        .join('')
+      
+      // Set the content in the editor
+      if (editor) {
+        editor.commands.setContent(htmlContent)
+        setContent(htmlContent)
+        
+        // Save it to the project
+        onSave(htmlContent)
+        setLastSaved(new Date())
+        
+        // Ensure we're in the editor tab
+        setActiveTab('editor')
+        
+        notifications.show({
+          title: 'Demo Text Loaded',
+          message: 'Alice\'s Adventures in Wonderland has been loaded. Try analyzing it with AI!',
+          color: 'blue',
+        })
+      }
+    } catch (error) {
+      notifications.show({
+        title: 'Failed to Load Demo',
+        message: error instanceof Error ? error.message : 'An unknown error occurred',
+        color: 'red',
+      })
+    } finally {
+      setIsLoadingDemo(false)
+    }
+  }, [editor, onSave, setContent, setActiveTab])
+  
+  // Show confirmation dialog before loading demo text
+  const handleLoadDemoText = useCallback(() => {
+    // Check if there's existing content to avoid accidental overwriting
+    if (content && content.trim().length > 100) {
+      // Use the modals API to confirm
+      modals.openConfirmModal({
+        title: 'Load Demo Text',
+        children: (
+          <Text size="sm">
+            Loading "Alice's Adventures in Wonderland" will replace your current content. Are you sure you want to continue?
+          </Text>
+        ),
+        labels: { confirm: 'Yes, Load Demo', cancel: 'Cancel' },
+        confirmProps: { color: 'blue' },
+        onConfirm: loadDemoText
+      });
+    } else {
+      // If there's no significant content, load directly
+      loadDemoText();
+    }
+  }, [content, loadDemoText])
 
   // Get issue severity color
   const getIssueSeverityColor = (severity: ConsistencyIssue['severity']) => {
@@ -271,6 +364,16 @@ export function StoryEditor({
             variant="light"
           >
             Save
+          </Button>
+          <Button
+            leftSection={<IconWand size={16} />}
+            onClick={handleLoadDemoText}
+            loading={isLoadingDemo}
+            variant="outline"
+            color="violet"
+            title="Load 'Alice in Wonderland' as demo text"
+          >
+            Load Demo
           </Button>
           <Button
             leftSection={<IconBrain size={16} />}
