@@ -1,4 +1,4 @@
-import type { WorldElement, WorldProject, StoryAnalysisResult, ConsistencyIssue } from '../types'
+import type { WorldElement, WorldProject, StoryAnalysisResult } from '../types';
 import { getProviders, isAIConfigured } from './ai-new'
 
 /**
@@ -7,7 +7,7 @@ import { getProviders, isAIConfigured } from './ai-new'
 export async function analyzeStory(
   storyContent: string, 
   existingElements: WorldElement[], 
-  project: WorldProject
+  _project: WorldProject // Unused but kept for API compatibility
 ): Promise<StoryAnalysisResult> {
   // Use the same provider logic as in ai.ts
   if (!isAIConfigured()) {

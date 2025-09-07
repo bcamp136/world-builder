@@ -2,6 +2,8 @@ import { generateText, streamText } from 'ai'
 import { createOpenAI } from '@ai-sdk/openai'
 import { createAnthropic } from '@ai-sdk/anthropic'
 import type { WorldElementType, AIPromptTemplate } from '../types'
+// Import usage enforcement
+import { validateAIUsage } from '../middleware/usage'
 
 // Create AI provider instances with API keys
 export function getProviders() {
@@ -13,6 +15,9 @@ export function getProviders() {
     anthropic: anthropicApiKey ? createAnthropic({ apiKey: anthropicApiKey }) : null,
   }
 }
+
+// Default user ID (in a real app, this would come from authentication)
+const DEFAULT_USER_ID = 'default-user'
 
 // Pre-defined prompt templates for different world building elements
 export const promptTemplates: AIPromptTemplate[] = [
@@ -67,13 +72,29 @@ export async function generateWorldElement(
   elementType: WorldElementType,
   userPrompt: string,
   provider: 'openai' | 'anthropic' = 'openai',
-  additionalContext?: string
+  additionalContext?: string,
+  userId: string = DEFAULT_USER_ID
 ) {
   try {
     const providers = getProviders()
     
     if (!providers[provider]) {
       throw new Error(`${provider} provider is not configured. Please add the API key to your .env file.`)
+    }
+    
+    // Determine model based on provider and user's plan
+    const modelName = provider === 'openai' ? 'gpt-4o-mini' : 'claude-3-sonnet-20240620'
+    
+    // Check usage limits before proceeding
+    const usageCheck = await validateAIUsage({
+      userId,
+      modelName,
+      operation: 'generate',
+      tokenEstimate: userPrompt.length / 4, // Rough estimate
+    })
+    
+    if (!usageCheck.allowed) {
+      throw new Error(usageCheck.message || 'Usage limit reached. Please upgrade your plan.')
     }
     
     const template = promptTemplates.find(t => t.type === elementType)
@@ -86,8 +107,8 @@ export async function generateWorldElement(
 
     const result = await generateText({
       model: provider === 'openai' 
-        ? providers.openai!('gpt-4')
-        : providers.anthropic!('claude-3-sonnet-20240229'),
+        ? providers.openai!(modelName)
+        : providers.anthropic!(modelName),
       prompt: `You are an expert world-building assistant specializing in creating rich, detailed, and internally consistent fictional worlds. ${contextualPrompt}
       
 Please provide a well-structured, detailed response that would be useful for a writer or game master. Focus on creativity, internal consistency, and practical usability.`,
@@ -96,22 +117,41 @@ Please provide a well-structured, detailed response that would be useful for a w
     return result.text
   } catch (error) {
     console.error('AI generation error:', error)
+    if (error instanceof Error) {
+      throw error // Pass through usage limit errors
+    }
     throw new Error('Failed to generate content. Please check your API configuration.')
   }
 }
 
 // Stream content generation for real-time feedback
-export function streamWorldElement(
+export async function streamWorldElement(
   elementType: WorldElementType,
   userPrompt: string,
   provider: 'openai' | 'anthropic' = 'openai',
-  additionalContext?: string
+  additionalContext?: string,
+  userId: string = DEFAULT_USER_ID
 ) {
   try {
     const providers = getProviders()
     
     if (!providers[provider]) {
       throw new Error(`${provider} provider is not configured. Please add the API key to your .env file.`)
+    }
+    
+    // Determine model based on provider and user's plan
+    const modelName = provider === 'openai' ? 'gpt-4o-mini' : 'claude-3-sonnet-20240620'
+    
+    // Check usage limits before proceeding
+    const usageCheck = await validateAIUsage({
+      userId,
+      modelName,
+      operation: 'stream',
+      tokenEstimate: userPrompt.length / 4, // Rough estimate
+    })
+    
+    if (!usageCheck.allowed) {
+      throw new Error(usageCheck.message || 'Usage limit reached. Please upgrade your plan.')
     }
     
     const template = promptTemplates.find(t => t.type === elementType)
@@ -124,14 +164,17 @@ export function streamWorldElement(
 
     return streamText({
       model: provider === 'openai' 
-        ? providers.openai!('gpt-4')
-        : providers.anthropic!('claude-3-sonnet-20240229'),
+        ? providers.openai!(modelName)
+        : providers.anthropic!(modelName),
       prompt: `You are an expert world-building assistant specializing in creating rich, detailed, and internally consistent fictional worlds. ${contextualPrompt}
       
 Please provide a well-structured, detailed response that would be useful for a writer or game master. Focus on creativity, internal consistency, and practical usability.`,
     })
   } catch (error) {
     console.error('AI streaming error:', error)
+    if (error instanceof Error) {
+      throw error // Pass through usage limit errors
+    }
     throw new Error('Failed to stream content. Please check your API configuration.')
   }
 }

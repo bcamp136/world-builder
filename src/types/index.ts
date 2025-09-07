@@ -16,6 +16,16 @@ export type WorldElementType =
   | 'object'      // Items, artifacts, and physical things
   | 'event'       // Happenings, conflicts, and occurrences
   | 'concept'     // Ideas, systems, and abstract notions
+  
+  // Extended types for specific world-building elements
+  | 'historical-event' | 'legend' | 'myth' | 'hero' | 'creation-story' | 'prophecy'
+  | 'power-system' | 'magic-system' | 'technology' | 'artifact' | 'invention' | 'magical-rule'
+  | 'intelligent-species' | 'creature' | 'monster' | 'supernatural-entity'
+  | 'belief-system' | 'deity' | 'spiritual-force' | 'religious-institution' | 'philosophy'
+  | 'war' | 'conflict' | 'military-force' | 'strategy' | 'threat' | 'antagonist'
+  | 'npc' | 'important-figure' | 'relationship'
+  | 'trade-system' | 'currency' | 'resource' | 'industry' | 'economic-class'
+  | 'note' | 'timeline' | 'plot' | 'lore'
 
 export interface AIPromptTemplate {
   id: string
@@ -55,4 +65,39 @@ export interface AIProvider {
   name: string
   models: string[]
   enabled: boolean
+}
+
+// User and subscription types for pricing plans
+export interface UsageRecord {
+  operation: 'generate' | 'stream' | 'analyze';
+  modelName: string;
+  timestamp: string;
+  tokenCount: number;
+}
+
+export interface UserUsage {
+  monthlyRequests: number;
+  dailyRequests: number;
+  tokensUsed: number;
+  storageUsed: number;
+  recentRequests: UsageRecord[];
+}
+
+export interface UserPlanInfo {
+  userId: string;
+  planType: string;
+  subscriptionId: string | null;
+  subscriptionStatus: 'active' | 'trialing' | 'past_due' | 'canceled' | 'incomplete';
+  worldElementCount: number;
+  usage: UserUsage;
+}
+
+export interface PlanEntitlement {
+  name: string;
+  requestsPerMonth: number;
+  requestsPerDay: number;
+  requestsPerMinute: number;
+  allowedModels: string[];
+  storageLimit: number;
+  elements: number;
 }

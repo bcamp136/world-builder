@@ -10,7 +10,38 @@ import {
   IconCalendar,
   IconNote,
   IconDiamond,
-  IconSparkles
+  IconSparkles,
+  IconBook2,
+  IconCrystalBall,
+  IconBolt,
+  IconWand,
+  IconRobot,
+  IconBulb,
+  IconRuler,
+  IconUsers,
+  IconPaw,
+  IconAlien,
+  IconGhost,
+  IconHeartHandshake,
+  IconStar,
+  IconFlare,
+  IconBuilding,
+  IconBrain,
+  IconSword,
+  IconSwords,
+  IconShield,
+  IconChessKnight,
+  IconAlertTriangle,
+  IconSkull,
+  IconCrown,
+  IconHearts,
+  IconCoin,
+  IconBox,
+  IconBuildingFactory,
+  IconChartBar,
+  IconTimeline,
+  IconRoad,
+  IconBook
 } from '@tabler/icons-react'
 import type { WorldElement } from '../types'
 
@@ -22,20 +53,104 @@ interface WorldElementCardProps {
   onConnect: (element: WorldElement) => void
 }
 
-const elementIcons = {
+const elementIcons: Record<string, typeof IconUser> = {
+  // Core types
   character: IconUser,
   place: IconMapPin,
   object: IconDiamond,
   event: IconCalendar,
-  concept: IconSparkles
+  concept: IconSparkles,
+  
+  // Extended types - using similar icons as their core categories
+  'historical-event': IconCalendar,
+  'legend': IconBook2,
+  'myth': IconBook2,
+  'hero': IconUser,
+  'creation-story': IconBook2,
+  'prophecy': IconCrystalBall,
+  'power-system': IconBolt,
+  'magic-system': IconWand,
+  'technology': IconRobot,
+  'artifact': IconDiamond,
+  'invention': IconBulb,
+  'magical-rule': IconRuler,
+  'intelligent-species': IconUsers,
+  'creature': IconPaw,
+  'monster': IconAlien,
+  'supernatural-entity': IconGhost,
+  'belief-system': IconHeartHandshake,
+  'deity': IconStar,
+  'spiritual-force': IconFlare,
+  'religious-institution': IconBuilding,
+  'philosophy': IconBrain,
+  'war': IconSword,
+  'conflict': IconSwords,
+  'military-force': IconShield,
+  'strategy': IconChessKnight,
+  'threat': IconAlertTriangle,
+  'antagonist': IconSkull,
+  'npc': IconUser,
+  'important-figure': IconCrown,
+  'relationship': IconHearts,
+  'trade-system': IconCoin,
+  'currency': IconCoin,
+  'resource': IconBox,
+  'industry': IconBuildingFactory,
+  'economic-class': IconChartBar,
+  'note': IconNote,
+  'timeline': IconTimeline,
+  'plot': IconRoad,
+  'lore': IconBook
 }
 
-const elementColors = {
+const elementColors: Record<string, string> = {
+  // Core types
   character: 'blue',
   place: 'green',
   object: 'violet',
   event: 'orange',
-  concept: 'teal'
+  concept: 'teal',
+  
+  // Extended types - grouped by similar categories
+  'historical-event': 'orange',
+  'legend': 'yellow',
+  'myth': 'yellow',
+  'hero': 'blue',
+  'creation-story': 'yellow',
+  'prophecy': 'yellow',
+  'power-system': 'grape',
+  'magic-system': 'grape',
+  'technology': 'indigo',
+  'artifact': 'violet',
+  'invention': 'indigo',
+  'magical-rule': 'grape',
+  'intelligent-species': 'blue',
+  'creature': 'lime',
+  'monster': 'red',
+  'supernatural-entity': 'purple',
+  'belief-system': 'pink',
+  'deity': 'yellow',
+  'spiritual-force': 'pink',
+  'religious-institution': 'pink',
+  'philosophy': 'teal',
+  'war': 'red',
+  'conflict': 'red',
+  'military-force': 'orange',
+  'strategy': 'teal',
+  'threat': 'red',
+  'antagonist': 'red',
+  'npc': 'blue',
+  'important-figure': 'blue',
+  'relationship': 'pink',
+  'trade-system': 'cyan',
+  'currency': 'cyan',
+  'resource': 'lime',
+  'industry': 'dark',
+  'economic-class': 'gray',
+  'note': 'gray',
+  'timeline': 'orange',
+  'plot': 'blue',
+  'lore': 'yellow'
 }
 
 export function WorldElementCard({ element, onEdit, onDelete, onDuplicate, onConnect }: WorldElementCardProps) {

@@ -14,10 +14,13 @@ import {
   Tabs,
   Paper,
   Center,
-  ThemeIcon
+  ThemeIcon,
+  ActionIcon,
+  Tooltip
 } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { modals } from '@mantine/modals'
+import { notifications } from '@mantine/notifications'
 import { 
   IconPlus, 
   IconBrain, 
@@ -28,19 +31,22 @@ import {
   IconMountain,
   IconSword,
   IconSparkles,
-  IconBook
+  IconBook,
+  IconUserCircle
 } from '@tabler/icons-react'
 import { WorldElementCard } from './components/WorldElementCard'
 import { WorldElementEditorContent } from './components/WorldElementEditorContent'
 import { AIPromptDialogContent } from './components/AIPromptDialogContent'
 import { FileManager } from './components/FileManager'
 import { StoryEditor } from './components/StoryEditor'
+import { AccountPage } from './components/AccountPage'
 import { 
   saveToStorage,
   createProject
 } from './utils/storage'
 import { simpleElementTypeOptions } from './utils/elementTypes'
-import type { WorldElement, WorldElementType, WorldProject } from './types'
+import { SUBSCRIPTION_PLANS } from './lib/stripe'
+import type { WorldElement, WorldElementType, WorldProject, UserPlanInfo } from './types'
 
 function App() {
   const [opened, { toggle }] = useDisclosure()
@@ -48,6 +54,21 @@ function App() {
   const [currentProject, setCurrentProject] = useState<WorldProject | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [typeFilter, setTypeFilter] = useState<string | null>(null)
+  // User plan state for subscription management
+  const [userPlan, setUserPlan] = useState<UserPlanInfo>({
+    userId: 'user-' + crypto.randomUUID(),
+    planType: SUBSCRIPTION_PLANS.BASIC,
+    subscriptionId: null,
+    subscriptionStatus: 'active',
+    worldElementCount: 0,
+    usage: {
+      monthlyRequests: 0,
+      dailyRequests: 0,
+      tokensUsed: 0,
+      storageUsed: 0,
+      recentRequests: []
+    }
+  })
   const [activeTab, setActiveTab] = useState<string | null>('all')
   const [activeView, setActiveView] = useState<'elements' | 'story'>('elements')
 
@@ -66,6 +87,17 @@ function App() {
         elements,
         currentProjectId: currentProject.id
       }, currentProject.id)
+      
+      // Update user plan with current element count
+      setUserPlan(prev => ({
+        ...prev,
+        worldElementCount: elements.length,
+        // Update storage usage estimation (rough approximation)
+        usage: {
+          ...prev.usage,
+          storageUsed: elements.reduce((acc, el) => acc + (el.content.length * 2), 0) // ~2 bytes per character as a rough estimate
+        }
+      }))
     }
   }, [elements, currentProject])
 
@@ -193,6 +225,26 @@ function App() {
   }
 
   const handleAIGenerated = (content: string, type: WorldElementType) => {
+    // Update AI usage metrics
+    setUserPlan(prev => ({
+      ...prev,
+      usage: {
+        ...prev.usage,
+        monthlyRequests: prev.usage.monthlyRequests + 1,
+        dailyRequests: prev.usage.dailyRequests + 1,
+        tokensUsed: prev.usage.tokensUsed + (content.length / 4), // rough token estimate
+        recentRequests: [
+          ...prev.usage.recentRequests,
+          {
+            operation: "generate" as const,
+            modelName: 'gpt-4o-mini',
+            timestamp: new Date().toISOString(),
+            tokenCount: content.length / 4
+          }
+        ].slice(-20) // Keep only last 20 requests
+      }
+    }))
+  
     const newElement: WorldElement = {
       id: crypto.randomUUID(),
       title: `New ${type.replace('-', ' ')}`,
@@ -297,6 +349,38 @@ function App() {
       </Center>
     )
   }
+  
+  // Function to open account management modal
+  const openAccountModal = () => {
+    modals.open({
+      modalId: 'account-management',
+      title: 'Account & Subscription',
+      size: 'lg',
+      children: (
+        <AccountPage
+          userPlan={userPlan}
+          onChangePlan={(planType) => {
+            // In a real app, this would handle Stripe checkout
+            // For now, we'll just update the user plan directly
+            setUserPlan(prev => ({
+              ...prev,
+              planType,
+              subscriptionStatus: 'active',
+              subscriptionId: planType !== SUBSCRIPTION_PLANS.BASIC ? `sub_${crypto.randomUUID().slice(0, 8)}` : null
+            }))
+            modals.close('account-management')
+            
+            // Show success notification
+            notifications.show({
+              title: 'Plan Updated',
+              message: `Your subscription has been updated to the ${planType.charAt(0).toUpperCase() + planType.slice(1)} plan.`,
+              color: 'green'
+            })
+          }}
+        />
+      ),
+    })
+  }
 
   return (
     <AppShell
@@ -305,12 +389,26 @@ function App() {
       padding="md"
     >
       <AppShell.Header>
-        <Group h="100%" px="md">
-          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+        <Group h="100%" px="md" justify="space-between">
           <Group>
-            <IconWorldWww size={28} color="#228be6" />
-            <Text size="xl" fw={600}>World Builder</Text>
+            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+            <Group>
+              <IconWorldWww size={28} color="#228be6" />
+              <Text size="xl" fw={600}>World Builder</Text>
+            </Group>
           </Group>
+          
+          {/* Account Button */}
+          <Tooltip label="Account & Subscription">
+            <ActionIcon
+              variant="subtle"
+              color="blue"
+              size="lg"
+              onClick={openAccountModal}
+            >
+              <IconUserCircle size={24} />
+            </ActionIcon>
+          </Tooltip>
         </Group>
       </AppShell.Header>
 
