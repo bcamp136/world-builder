@@ -12,7 +12,8 @@ import {
 } from '@mantine/core'
 import { IconInfoCircle, IconWand } from '@tabler/icons-react'
 import { notifications } from '@mantine/notifications'
-import { promptTemplates, generateWorldElement, isAIConfigured } from '../utils/ai-new'
+import { generateWorldElementWithUsageLimit, isAIConfigured } from '../lib/ai-usage'
+import { promptTemplates } from '../utils/ai'
 import type { WorldElementType } from '../types'
 
 interface AIPromptDialogContentProps {
@@ -60,7 +61,8 @@ export function AIPromptDialogContent({
         ? contextElements.join('\n\n') 
         : undefined
 
-      const content = await generateWorldElement(
+      const content = await generateWorldElementWithUsageLimit(
+        'user-1', // In a real implementation, this would be the user's ID
         selectedType,
         userPrompt,
         provider,

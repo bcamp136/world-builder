@@ -1,5 +1,5 @@
-import type { WorldElement, WorldProject, StoryAnalysisResult } from '../types';
-import { getProviders, isAIConfigured } from './ai-new'
+import type { WorldElement, WorldProject, StoryAnalysisResult, ConsistencyIssue } from '../types'
+import { getProviders, isAIConfigured } from './ai'
 
 /**
  * Analyzes a story using AI to identify elements and consistency issues

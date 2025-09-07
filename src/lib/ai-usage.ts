@@ -65,7 +65,7 @@ export async function generateWorldElementWithUsageLimit(
     
     // If usage check passes, proceed with the AI request
     // This code is adapted from your existing generateWorldElement function
-    const promptTemplates = (await import('../utils/ai-new')).promptTemplates;
+    const promptTemplates = (await import('../utils/ai')).promptTemplates;
     const template = promptTemplates.find(t => t.type === elementType);
     const basePrompt = template ? template.prompt.replace('{userInput}', userPrompt) : 
       `As a creative world-building assistant, help create detailed content for a ${elementType}: ${userPrompt}`;
@@ -122,7 +122,7 @@ export async function streamWorldElementWithUsageLimit(
     
     // If usage check passes, proceed with the AI request
     // This code is adapted from your existing streamWorldElement function
-    const promptTemplates = (await import('../utils/ai-new')).promptTemplates;
+    const promptTemplates = (await import('../utils/ai')).promptTemplates;
     const template = promptTemplates.find(t => t.type === elementType);
     const basePrompt = template ? template.prompt.replace('{userInput}', userPrompt) : 
       `As a creative world-building assistant, help create detailed content for a ${elementType}: ${userPrompt}`;

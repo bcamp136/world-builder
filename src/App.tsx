@@ -45,7 +45,7 @@ import {
   createProject
 } from './utils/storage'
 import { simpleElementTypeOptions } from './utils/elementTypes'
-import { SUBSCRIPTION_PLANS } from './lib/stripe'
+import { SUBSCRIPTION_PLANS, PLAN_ENTITLEMENTS } from './lib/stripe'
 import type { WorldElement, WorldElementType, WorldProject, UserPlanInfo } from './types'
 
 function App() {
@@ -276,6 +276,24 @@ function App() {
   }
 
   const handleNewElement = () => {
+    // Check if user has reached element limit based on their plan
+    const currentPlan = userPlan.planType || 'basic'
+    const entitlements = PLAN_ENTITLEMENTS[currentPlan]
+    
+    if (elements.length >= entitlements.elements && entitlements.elements !== Number.MAX_SAFE_INTEGER) {
+      // Show element limit notification
+      notifications.show({
+        title: 'Element Limit Reached',
+        message: `You've reached the maximum number of elements (${entitlements.elements}) for your ${currentPlan} plan. Please upgrade to add more elements.`,
+        color: 'red',
+        icon: <IconUserCircle />
+      })
+      
+      // Open the account modal to encourage upgrade
+      openAccountModal()
+      return
+    }
+    
     modals.open({
       modalId: 'world-element-editor-new',
       title: 'Create New Element',
