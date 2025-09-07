@@ -348,7 +348,7 @@ export function StoryEditor({
   }, [discoveredElements.length, isAnalyzing, setActiveTab])
 
   return (
-    <Stack gap="md" h="calc(100vh - 180px)" style={{ display: 'flex', flexDirection: 'column', background: 'inherit' }}>
+    <Stack gap="md" style={{ display: 'flex', flexDirection: 'column', background: 'inherit' }}>
       <Group justify="space-between">
         <Title order={2}>Story Editor</Title>
         <Group>
@@ -432,11 +432,11 @@ export function StoryEditor({
           </Tabs.Tab>
         </Tabs.List>
 
-        <Tabs.Panel value="editor" pt="xs" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          {/* Rich text editor */}
-          <Paper p="md" withBorder style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--mantine-color-body)' }}>
+        <Tabs.Panel value="editor" pt="xs">
+          {/* Rich text editor with fixed height and internal scrolling */}
+          <Paper p="md" withBorder style={{ background: 'var(--mantine-color-body)' }}>
             {editor && (
-              <RichTextEditor editor={editor} style={{ display: 'flex', flexDirection: 'column', height: '100%', flex: 1, background: 'var(--mantine-color-body)' }}>
+              <RichTextEditor editor={editor} style={{ background: 'var(--mantine-color-body)' }}>
                 <RichTextEditor.Toolbar sticky stickyOffset={60}>
                   <RichTextEditor.ControlsGroup>
                     <RichTextEditor.Bold />
@@ -463,16 +463,22 @@ export function StoryEditor({
                   </RichTextEditor.ControlsGroup>
                 </RichTextEditor.Toolbar>
 
-                <RichTextEditor.Content style={{ flex: 1, background: 'var(--mantine-color-body)' }} />
+                <RichTextEditor.Content 
+                  style={{ 
+                    height: '60vh', 
+                    overflowY: 'auto',
+                    background: 'var(--mantine-color-body)'
+                  }} 
+                />
               </RichTextEditor>
             )}
           </Paper>
         </Tabs.Panel>
 
-        <Tabs.Panel value="elements" pt="xs" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          {/* Discovered elements panel */}
+        <Tabs.Panel value="elements" pt="xs">
+          {/* Discovered elements panel with fixed height */}
           {discoveredElements.length > 0 ? (
-            <Paper withBorder p="md" style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--mantine-color-body)', overflow: 'auto' }}>
+            <Paper withBorder p="md" style={{ background: 'var(--mantine-color-body)' }}>
               <Group justify="space-between" mb="md">
                 <Group>
                   <IconListDetails size={18} />
@@ -494,7 +500,7 @@ export function StoryEditor({
                 These elements were discovered in your story. Review them and click "Save All Elements" to add them to your world.
               </Alert>
               
-              <Stack gap="md" style={{ overflow: 'auto' }}>
+              <Stack gap="md" style={{ overflowY: 'auto' }}>
                 {discoveredElements.map((element) => (
                   <Card key={element.id} withBorder shadow="sm" p="md" style={{ background: 'var(--mantine-color-body)' }}>
                     <Group justify="space-between" mb="xs">
@@ -514,7 +520,7 @@ export function StoryEditor({
               </Stack>
             </Paper>
           ) : (
-            <Paper withBorder p="xl" style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'var(--mantine-color-body)' }}>
+            <Paper withBorder p="xl" style={{ height: '60vh', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'var(--mantine-color-body)' }}>
               <Text c="dimmed" ta="center">
                 No elements have been discovered yet.<br />
                 Use "Analyze with AI" to detect world elements in your story.
@@ -523,10 +529,10 @@ export function StoryEditor({
           )}
         </Tabs.Panel>
 
-        <Tabs.Panel value="issues" pt="xs" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          {/* Consistency issues panel */}
+        <Tabs.Panel value="issues" pt="xs">
+          {/* Consistency issues panel with fixed height */}
           {consistencyIssues.length > 0 ? (
-            <Paper withBorder p="md" style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--mantine-color-body)', overflow: 'auto' }}>
+            <Paper withBorder p="md" style={{ background: 'var(--mantine-color-body)' }}>
               <Group mb="md">
                 <IconAlertCircle size={18} />
                 <Title order={3}>Consistency Issues</Title>
@@ -537,7 +543,7 @@ export function StoryEditor({
                 The AI has detected potential consistency issues in your story. Review them below.
               </Alert>
               
-              <Stack gap="md" style={{ overflow: 'auto' }}>
+              <Stack gap="md" style={{ height: '60vh', overflowY: 'auto' }}>
                 {consistencyIssues.map((issue, index) => (
                   <Alert
                     key={index}
@@ -566,7 +572,7 @@ export function StoryEditor({
               </Stack>
             </Paper>
           ) : (
-            <Paper withBorder p="xl" style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'var(--mantine-color-body)' }}>
+            <Paper withBorder p="xl" style={{ height: '60vh', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'var(--mantine-color-body)' }}>
               <Text c="dimmed" ta="center">
                 No consistency issues have been detected.<br />
                 Use "Analyze with AI" to check for potential issues in your story.

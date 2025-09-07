@@ -43,7 +43,8 @@ export function WorldElementCard({ element, onEdit, onDelete, onDuplicate, onCon
   const color = elementColors[element.type] || 'gray'
 
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
+    <Card shadow="sm" padding="lg" radius="md" withBorder style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      {/* Card Header with Title and Menu */}
       <Group justify="space-between" mb="xs">
         <Group>
           <IconComponent size={20} color={`var(--mantine-color-${color}-6)`} />
@@ -75,6 +76,7 @@ export function WorldElementCard({ element, onEdit, onDelete, onDuplicate, onCon
         </Menu>
       </Group>
 
+      {/* Element Type and Tags */}
       <Group mb="xs">
         <Badge color={color} variant="light">
           {element.type.replace('-', ' ')}
@@ -86,11 +88,13 @@ export function WorldElementCard({ element, onEdit, onDelete, onDuplicate, onCon
         ))}
       </Group>
 
-      <Text size="sm" c="dimmed" lineClamp={3}>
+      {/* Element Content Summary - Using flex-grow to push button to bottom */}
+      <Text size="sm" c="dimmed" lineClamp={3} style={{ flexGrow: 1, marginBottom: '1rem' }}>
         {element.content.replace(/<[^>]*>/g, '').substring(0, 150)}...
       </Text>
 
-      <Button variant="light" fullWidth mt="md" onClick={() => onEdit(element)}>
+      {/* Action Button - Will always be at the bottom of the card */}
+      <Button variant="light" fullWidth onClick={() => onEdit(element)}>
         View & Edit
       </Button>
     </Card>

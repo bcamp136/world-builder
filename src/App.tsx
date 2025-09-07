@@ -358,29 +358,23 @@ function App() {
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <Container size="xl" px={0}>
-          <Stack>
-            {/* File Manager */}
-            <Paper p="md" withBorder>
-              <Stack gap="sm">
-                <Group justify="space-between">
-                  <Text fw={600}>Project</Text>
-                  <Text size="sm" c="dimmed">
-                    {currentProject ? `${elements.length} elements` : 'No project loaded'}
-                  </Text>
-                </Group>
-                <FileManager
-                  currentProject={currentProject}
-                  elements={elements}
-                  onProjectLoad={handleProjectLoad}
-                  onProjectSave={handleProjectSave}
-                />
-                {currentProject && (
-                  <Text size="sm" c="dimmed">
-                    {currentProject.name} {currentProject.description && `- ${currentProject.description}`}
-                  </Text>
-                )}
-              </Stack>
+        <Container size="xl" px={0} h="100%">
+          <Stack style={{ minHeight: "calc(100vh - 100px)" }}>
+            {/* File Manager - More Compact */}
+            <Paper 
+              p="xs" 
+              withBorder 
+              style={{
+                transition: 'all 0.2s ease',
+              }}
+              className="project-header"
+            >
+              <FileManager
+                currentProject={currentProject}
+                elements={elements}
+                onProjectLoad={handleProjectLoad}
+                onProjectSave={handleProjectSave}
+              />
             </Paper>
 
             {currentProject && (
@@ -476,7 +470,7 @@ function App() {
                     {filteredElements.length === 0 ? (
                       <EmptyState />
                     ) : (
-                      <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
+                      <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md" style={{ minHeight: "calc(100vh - 300px)" }}>
                         {filteredElements.map((element) => (
                           <WorldElementCard
                             key={element.id}

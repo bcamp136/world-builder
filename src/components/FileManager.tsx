@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import {
   Group,
-  Button,
   Menu,
   ActionIcon,
   Text,
   Stack,
-  Alert
+  Alert,
+  Tooltip,
+  Badge
 } from '@mantine/core'
 import { modals } from '@mantine/modals'
 import {
@@ -16,7 +17,8 @@ import {
   IconDownload,
   IconUpload,
   IconDots,
-  IconInfoCircle
+  IconInfoCircle,
+  IconFolderPlus
 } from '@tabler/icons-react'
 import {
   isFileSystemAccessSupported,
@@ -160,45 +162,68 @@ export function FileManager({
   }
 
   return (
-    <Group>
-      <Button
-        leftSection={<IconFolder size={16} />}
-        onClick={handleNewProject}
-        variant="light"
-      >
-        New
-      </Button>
+    <Group justify="space-between" align="center">
+      <Group gap="xs">
+        <IconFolder size={16} style={{ opacity: 0.7 }} />
+        {currentProject ? (
+          <Text size="sm" fw={500} style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {currentFileName || currentProject.name}
+          </Text>
+        ) : (
+          <Text size="sm" c="dimmed">No project loaded</Text>
+        )}
+        <Badge size="sm">{elements.length} elements</Badge>
+      </Group>
+      
+      <Group gap={4}>
+        <Tooltip label="Save Project" withArrow position="bottom">
+          <ActionIcon 
+            size="sm"
+            onClick={handleSaveProject}
+            loading={isSaving}
+            disabled={!currentProject}
+            variant="light"
+            color="blue"
+          >
+            <IconDeviceFloppy size={14} />
+          </ActionIcon>
+        </Tooltip>
 
-      <Button
-        leftSection={<IconFolderOpen size={16} />}
-        onClick={handleOpenProject}
-        loading={isLoading}
-        variant="light"
-      >
-        Open
-      </Button>
-
-      <Button
-        leftSection={<IconDeviceFloppy size={16} />}
-        onClick={handleSaveProject}
-        loading={isSaving}
-        disabled={!currentProject}
-      >
-        Save
-      </Button>
-
-      {currentProject && (
-        <Menu shadow="md" width={200}>
-          <Menu.Target>
-            <ActionIcon variant="light">
-              <IconDots size={16} />
-            </ActionIcon>
-          </Menu.Target>
+        <Tooltip label="New Project" withArrow position="bottom">
+          <ActionIcon 
+            size="sm"
+            onClick={handleNewProject}
+            variant="subtle"
+          >
+            <IconFolderPlus size={14} />
+          </ActionIcon>
+        </Tooltip>
+        
+        <Tooltip label="Open Project" withArrow position="bottom">
+          <ActionIcon 
+            size="sm"
+            onClick={handleOpenProject}
+            disabled={isLoading}
+            variant="subtle"
+          >
+            <IconFolderOpen size={14} />
+          </ActionIcon>
+        </Tooltip>
+        
+        <Menu shadow="md" width={200} position="bottom-end">
+          <Tooltip label="More Options" withArrow position="bottom">
+            <Menu.Target>
+              <ActionIcon variant="subtle" size="sm">
+                <IconDots size={14} />
+              </ActionIcon>
+            </Menu.Target>
+          </Tooltip>
 
           <Menu.Dropdown>
             <Menu.Item
               leftSection={<IconDownload size={14} />}
               onClick={handleExportProject}
+              disabled={!currentProject}
             >
               Export Project
             </Menu.Item>
@@ -210,13 +235,7 @@ export function FileManager({
             </Menu.Item>
           </Menu.Dropdown>
         </Menu>
-      )}
-
-      {currentFileName && (
-        <Text size="sm" c="dimmed">
-          {currentFileName}
-        </Text>
-      )}
+      </Group>
     </Group>
   )
 }

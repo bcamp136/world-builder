@@ -40,7 +40,7 @@ export async function analyzeStory(
   ${elementsSummary || 'No existing elements yet.'}
   
   ## Instructions:
-  1. Identify ALL key world elements in the story (characters, places, events, etc.). Be thorough and aim to extract at least 10-20 distinct elements.
+  1. Identify ALL key world elements in the story (characters, places, events, etc.). Be thorough and aim to extract as many important and distinct elements as possible.
   2. Find any consistency issues (timeline problems, character contradictions, setting inconsistencies)
   3. Format your response as valid JSON with the following structure:
   

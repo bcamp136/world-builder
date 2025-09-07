@@ -35,6 +35,15 @@ h1 {
   line-height: 1.1;
 }
 
+.project-header {
+  transition: all 0.2s ease;
+}
+
+.project-header:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
