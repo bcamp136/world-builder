@@ -5,6 +5,7 @@ import { Notifications } from '@mantine/notifications'
 import { ModalsProvider } from '@mantine/modals'
 import './index.css'
 import App from './App.tsx'
+import { StripeProvider } from './components/StripeProvider'
 
 // Import Mantine styles
 import '@mantine/core/styles.css'
@@ -21,7 +22,9 @@ createRoot(document.getElementById('root')!).render(
         }}
       >
         <Notifications />
-        <App />
+        <StripeProvider>
+          <App />
+        </StripeProvider>
       </ModalsProvider>
     </MantineProvider>
   </StrictMode>,

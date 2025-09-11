@@ -1,4 +1,4 @@
-import { useState } from 'react';
+// React imports
 import {
   Button,
   Card,
@@ -22,28 +22,18 @@ import {
   IconRobot
 } from '@tabler/icons-react';
 import { PLAN_ENTITLEMENTS, SUBSCRIPTION_PLANS } from '../lib/stripe';
+import { CheckoutButton } from './CheckoutButton';
 import type { UserPlanInfo } from '../types';
 
 interface AccountPageProps {
   userId?: string; // Made optional since it's not used
   userPlan: UserPlanInfo;
-  onChangePlan: (planType: string) => void;
+  onChangePlan?: (planType: string) => void;
 }
 
-export function AccountPage({ userPlan, onChangePlan }: AccountPageProps) {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleUpgradePlan = async (planType: string) => {
-    setIsLoading(true);
-    try {
-      // In a real implementation, this would redirect to Stripe Checkout
-      await onChangePlan(planType);
-    } catch (error) {
-      console.error('Error upgrading plan:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+export function AccountPage({ userPlan }: AccountPageProps) {
+  // User plan information is passed from App.tsx
+  // Stripe checkout is now handled directly by the CheckoutButton component
 
   const formatBytes = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
@@ -149,71 +139,67 @@ export function AccountPage({ userPlan, onChangePlan }: AccountPageProps) {
         
         <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="lg">
           {/* Basic Plan */}
-          <PlanCard 
+                    <PlanCard 
             name="Basic"
             price="$9.99"
-            description="Essential tools for small world building projects"
+            description="Essential world building capabilities for hobbyists."
             features={[
-              "1,000 AI requests per month",
-              "1 GB storage",
-              "100 world elements",
-              "Basic AI models only",
-              "Limited rate: 5 req/min"
+              '1,000 AI requests per month',
+              '50 AI requests per day',
+              'GPT-4o Mini model access',
+              '100 world elements',
+              '1GB storage'
             ]}
             limitations={[
-              "No advanced AI models",
-              "Limited export options"
+              'No access to advanced AI models',
+              'Limited to 100 world elements'
             ]}
             planType={SUBSCRIPTION_PLANS.BASIC}
-            currentPlan={currentPlanType}
-            onSelect={handleUpgradePlan}
-            isLoading={isLoading}
-            icon={<IconRobot size={32} />}
-            color="teal"
+            currentPlan={userPlan.planType}
+            userPlan={userPlan}
+            icon={<IconRobot size={28} />}
+            color="blue"
           />
           
           {/* Pro Plan */}
-          <PlanCard
+                    <PlanCard
             name="Pro"
             price="$19.99"
-            description="Advanced features for serious world builders"
+            description="Advanced features for serious world builders."
             features={[
-              "20,000 AI requests per month",
-              "20 GB storage",
-              "2,000 world elements",
-              "Standard + Advanced AI models",
-              "Better rate: 20 req/min"
+              '20,000 AI requests per month',
+              '500 AI requests per day',
+              'GPT-4o and Claude 3 Sonnet access',
+              '2,000 world elements',
+              '20GB storage'
             ]}
             limitations={[
-              "No enterprise AI models"
+              'No access to Opus models'
             ]}
             planType={SUBSCRIPTION_PLANS.PRO}
-            currentPlan={currentPlanType}
-            onSelect={handleUpgradePlan}
-            isLoading={isLoading}
-            icon={<IconBrandOpenai size={32} />}
-            color="blue"
-            isPopular
+            currentPlan={userPlan.planType}
+            userPlan={userPlan}
+            icon={<IconBrandOpenai size={28} />}
+            color="violet"
+            isPopular={true}
           />
           
           {/* Enterprise Plan */}
-          <PlanCard
+                    <PlanCard
             name="Enterprise"
             price="$49.99"
-            description="Unlimited world building capabilities"
+            description="Unlimited capabilities for professional authors."
             features={[
-              "Unlimited AI requests",
-              "200 GB storage",
-              "Unlimited world elements",
-              "All AI models including premium",
-              "Best rate: 60 req/min"
+              'Unlimited AI requests',
+              'GPT-4 Turbo and Claude 3 Opus access',
+              'Unlimited world elements',
+              '200GB storage'
             ]}
             planType={SUBSCRIPTION_PLANS.ENTERPRISE}
-            currentPlan={currentPlanType}
-            onSelect={handleUpgradePlan}
-            isLoading={isLoading}
-            icon={<IconCrown size={32} />}
-            color="violet"
+            currentPlan={userPlan.planType}
+            userPlan={userPlan}
+            icon={<IconCrown size={28} />}
+            color="gold"
           />
         </SimpleGrid>
       </Stack>
@@ -230,8 +216,7 @@ interface PlanCardProps {
   limitations?: string[];
   planType: string;
   currentPlan: string;
-  onSelect: (planType: string) => void;
-  isLoading: boolean;
+  userPlan: UserPlanInfo;
   icon: React.ReactNode;
   color: string;
   isPopular?: boolean;
@@ -245,8 +230,7 @@ function PlanCard({
   limitations = [],
   planType,
   currentPlan,
-  onSelect,
-  isLoading,
+  userPlan,
   icon,
   color,
   isPopular = false
@@ -323,16 +307,22 @@ function PlanCard({
           </List>
         )}
         
-        <Button 
-          variant={isCurrentPlan ? 'light' : 'filled'} 
-          color={color}
-          fullWidth
-          onClick={() => onSelect(planType)}
-          loading={isLoading}
-          disabled={isCurrentPlan}
-        >
-          {isCurrentPlan ? 'Current Plan' : 'Upgrade'}
-        </Button>
+        {isCurrentPlan ? (
+          <Button 
+            variant="light" 
+            color={color}
+            fullWidth
+            disabled
+          >
+            Current Plan
+          </Button>
+        ) : (
+          <CheckoutButton
+            priceId={import.meta.env[`VITE_STRIPE_PRICE_ID_${planType.toUpperCase()}`] || ''}
+            customerId={userPlan.userId}
+            planName={name}
+          />
+        )}
       </Stack>
     </Card>
   );

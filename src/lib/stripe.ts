@@ -1,26 +1,27 @@
-// For frontend/development we're just defining types and constants
-// A real implementation would use the Stripe SDK on the server side
-// This is a simplified mock of the Stripe SDK for development purposes
+// Stripe.js integration for React
+import { loadStripe } from '@stripe/stripe-js';
+import type { Stripe } from '@stripe/stripe-js';
 
-// Initialize Stripe client - mock implementation for frontend
-const stripe = {
-  apiVersion: '2023-10-16',
-  products: {
-    create: async (options: any) => ({ id: 'mock-product-id', ...options })
-  },
-  prices: {
-    create: async (options: any) => ({ id: 'mock-price-id', ...options })
-  },
-  checkout: {
-    sessions: {
-      create: async (options: any) => ({ 
-        id: 'mock-session-id',
-        url: 'https://example.com/checkout',
-        ...options
-      })
+// Initialize Stripe with your publishable key
+// This should be your actual publishable key from Stripe Dashboard
+// The key should be stored in an environment variable (VITE_STRIPE_PUBLISHABLE_KEY)
+let stripePromise: Promise<Stripe | null> | null = null;
+
+// Function to get the Stripe instance
+export const getStripe = () => {
+  if (!stripePromise) {
+    const key = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+    if (!key) {
+      console.error('Stripe publishable key is not defined in environment variables');
+      return null;
     }
+    stripePromise = loadStripe(key);
   }
+  return stripePromise;
 };
+
+// Import our API client for Stripe serverless functions
+import { stripeApi } from './stripe-api';
 
 // Define plan tiers and their entitlements
 export const SUBSCRIPTION_PLANS = {
@@ -60,138 +61,59 @@ export const PLAN_ENTITLEMENTS = {
   }
 };
 
-// Helper function to create subscription products in Stripe
-export const createSubscriptionProducts = async () => {
+// This is now handled by the backend/serverless functions
+// Helper function to fetch subscription products from Stripe
+export const fetchSubscriptionProducts = async () => {
   try {
-    // Create Basic product
-    const basicProduct = await stripe.products.create({
-      name: 'World Builder Basic',
-      description: 'Access to essential world building features with 1,000 AI requests per month.',
-    });
-
-    await stripe.prices.create({
-      product: basicProduct.id,
-      unit_amount: 999, // $9.99
-      currency: 'usd',
-      recurring: {
-        interval: 'month',
-      },
-      metadata: {
-        plan_type: SUBSCRIPTION_PLANS.BASIC,
-      },
-    });
-
-    // Create Pro product
-    const proProduct = await stripe.products.create({
-      name: 'World Builder Pro',
-      description: 'Advanced world building features with 20,000 AI requests per month.',
-    });
-
-    await stripe.prices.create({
-      product: proProduct.id,
-      unit_amount: 1999, // $19.99
-      currency: 'usd',
-      recurring: {
-        interval: 'month',
-      },
-      metadata: {
-        plan_type: SUBSCRIPTION_PLANS.PRO,
-      },
-    });
-
-    // Create Enterprise product
-    const enterpriseProduct = await stripe.products.create({
-      name: 'World Builder Enterprise',
-      description: 'Unlimited world building capabilities with advanced AI models.',
-    });
-
-    await stripe.prices.create({
-      product: enterpriseProduct.id,
-      unit_amount: 4999, // $49.99
-      currency: 'usd',
-      recurring: {
-        interval: 'month',
-      },
-      metadata: {
-        plan_type: SUBSCRIPTION_PLANS.ENTERPRISE,
-      },
-    });
-
-    console.log('Subscription products created successfully');
-    return true;
+    const products = await stripeApi.getProducts();
+    console.log('Subscription products fetched successfully');
+    return products;
   } catch (error) {
-    console.error('Error creating subscription products:', error);
-    return false;
+    console.error('Error fetching subscription products:', error);
+    return [];
   }
 };
 
 // Function to create a checkout session for subscription
-export const createCheckoutSession = async (priceId: string, customerId: string) => {
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    line_items: [
-      {
-        price: priceId,
-        quantity: 1,
-      },
-    ],
-    mode: 'subscription',
-    success_url: `${import.meta.env.VITE_APP_URL}/account?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${import.meta.env.VITE_APP_URL}/pricing`,
-    customer: customerId,
-  });
-
-  return session;
+export const createCheckoutSession = async (priceId: string, customerId?: string) => {
+  try {
+    const session = await stripeApi.createCheckoutSession(priceId, customerId);
+    return session;
+  } catch (error) {
+    console.error('Error creating checkout session:', error);
+    return null;
+  }
 };
 
-// Function to handle Stripe webhooks
-export const handleStripeWebhook = async (event: { type: string; data: { object: Record<string, unknown> } }) => {
+// Function to get a customer's subscription information
+export const getCustomerSubscription = async (customerId: string) => {
   try {
-    switch (event.type) {
-      case 'checkout.session.completed': {
-        // Handle successful checkout
-        // const checkoutSession = event.data.object;
-        // Access event.data.object when implementing the user subscription update
-        // TODO: Update user's subscription status in database
-        break;
-      }
-
-      case 'invoice.paid': {
-        // Handle successful invoice payment
-        // const invoice = event.data.object;
-        // Access event.data.object when implementing the subscription status update
-        // TODO: Update user's subscription status in database
-        break;
-      }
-
-      case 'invoice.payment_failed': {
-        // Handle failed invoice payment
-        // TODO: Notify user of payment failure and possibly downgrade plan
-        break;
-      }
-
-      case 'customer.subscription.updated': {
-        // Handle subscription updates
-        // const subscription = event.data.object;
-        // Access event.data.object when implementing the subscription update
-        // TODO: Update user's subscription details in database
-        break;
-      }
-
-      case 'customer.subscription.deleted':
-        // Handle subscription cancellation
-        // TODO: Downgrade user to free plan
-        break;
-
-      default:
-        console.log(`Unhandled event type: ${event.type}`);
-    }
-
-    return true;
+    const subscription = await stripeApi.getCustomerSubscription(customerId);
+    return subscription;
   } catch (error) {
-    console.error('Error handling Stripe webhook:', error);
+    console.error('Error fetching customer subscription:', error);
+    return null;
+  }
+};
+
+// Function to cancel a subscription
+export const cancelSubscription = async (subscriptionId: string) => {
+  try {
+    const success = await stripeApi.cancelSubscription(subscriptionId);
+    return success;
+  } catch (error) {
+    console.error('Error cancelling subscription:', error);
     return false;
   }
 };
 
-export default stripe;
+// Create a StripeFunctions object that exports all the functions
+const StripeFunctions = {
+  getStripe,
+  fetchSubscriptionProducts,
+  createCheckoutSession,
+  getCustomerSubscription,
+  cancelSubscription
+};
+
+export default StripeFunctions;
