@@ -57,6 +57,7 @@ World Builder is a comprehensive tool for creating and managing fictional worlds
 ### Installation
 
 1. **Clone and install**:
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/world-builder.git
    cd world-builder
@@ -64,17 +65,20 @@ World Builder is a comprehensive tool for creating and managing fictional worlds
    ```
 
 2. **Set up environment variables** (for AI features):
+
    ```bash
    cp .env.example .env
    ```
 
 3. **Add your API keys to `.env`**:
+
    ```env
    VITE_OPENAI_API_KEY=your_openai_api_key_here
    VITE_ANTHROPIC_API_KEY=your_anthropic_api_key_here
    ```
 
 4. **Start the development server**:
+
    ```bash
    npm run dev
    ```
@@ -171,16 +175,19 @@ src/
 ## 🎯 Use Cases
 
 ### For Writers
+
 - **Novel Building**: Create detailed worlds for fantasy, sci-fi, or historical fiction
 - **Character Development**: Build complex characters and their relationships
 - **Plot Planning**: Organize events, conflicts, and story arcs
 
 ### For Game Masters
+
 - **RPG Campaigns**: Design comprehensive campaign settings
 - **NPC Management**: Create memorable non-player characters
 - **World Consistency**: Keep track of rules, history, and geography
 
 ### For Game Developers
+
 - **Game Worlds**: Plan and document game environments
 - **Lore Creation**: Develop rich backstories and mythologies
 - **Asset Planning**: Organize creatures, items, and locations
@@ -219,16 +226,19 @@ npm run build
 ### Common Issues
 
 **AI features not working?**
+
 - Verify your API keys are correctly set in `.env`
 - Check your API provider dashboard for usage limits
 - Ensure you have internet connectivity
 
 **File save/load not working?**
+
 - Use a modern browser (Chrome 86+, Firefox 111+, Safari 15.2+)
 - Enable file system access if prompted
 - Check browser security settings
 
 **Development server issues?**
+
 - Clear `node_modules` and reinstall: `rm -rf node_modules package-lock.json && npm install`
 - Update Node.js to version 18 or higher
 - Check port 5173 isn't in use by another application

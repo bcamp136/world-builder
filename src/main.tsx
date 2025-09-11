@@ -14,18 +14,19 @@ import '@mantine/tiptap/styles.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <MantineProvider>
-      <ModalsProvider
-        modalProps={{
-          centered: true,
-          overlayProps: { backgroundOpacity: 0.55, blur: 3 },
-        }}
-      >
-        <Notifications />
-        <StripeProvider>
+    <StripeProvider>
+      <MantineProvider>
+        <ModalsProvider
+          modalProps={{
+            centered: true,
+            overlayProps: { backgroundOpacity: 0.55, blur: 3 },
+          }}
+        >
+          <Notifications />
+
           <App />
-        </StripeProvider>
-      </ModalsProvider>
-    </MantineProvider>
-  </StrictMode>,
+        </ModalsProvider>
+      </MantineProvider>
+    </StripeProvider>
+  </StrictMode>
 )

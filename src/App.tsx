@@ -1,12 +1,12 @@
 import { useState, useMemo, useEffect } from 'react'
-import { 
-  AppShell, 
-  Burger, 
-  Group, 
-  Text, 
-  Container, 
-  Title, 
-  Stack, 
+import {
+  AppShell,
+  Burger,
+  Group,
+  Text,
+  Container,
+  Title,
+  Stack,
   Button,
   SimpleGrid,
   TextInput,
@@ -16,14 +16,14 @@ import {
   Center,
   ThemeIcon,
   ActionIcon,
-  Tooltip
+  Tooltip,
 } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { modals } from '@mantine/modals'
 import { notifications } from '@mantine/notifications'
-import { 
-  IconPlus, 
-  IconBrain, 
+import {
+  IconPlus,
+  IconBrain,
   IconSearch,
   IconFilter,
   IconWorldWww,
@@ -32,7 +32,7 @@ import {
   IconSword,
   IconSparkles,
   IconBook,
-  IconUserCircle
+  IconUserCircle,
 } from '@tabler/icons-react'
 import { WorldElementCard } from './components/WorldElementCard'
 import { WorldElementEditorContent } from './components/WorldElementEditorContent'
@@ -40,10 +40,7 @@ import { AIPromptDialogContent } from './components/AIPromptDialogContent'
 import { FileManager } from './components/FileManager'
 import { StoryEditor } from './components/StoryEditor'
 import { AccountPage } from './components/AccountPage'
-import { 
-  saveToStorage,
-  createProject
-} from './utils/storage'
+import { saveToStorage, createProject } from './utils/storage'
 import { simpleElementTypeOptions } from './utils/elementTypes'
 import { SUBSCRIPTION_PLANS, PLAN_ENTITLEMENTS } from './lib/stripe'
 import type { WorldElement, WorldElementType, WorldProject, UserPlanInfo } from './types'
@@ -66,8 +63,8 @@ function App() {
       dailyRequests: 0,
       tokensUsed: 0,
       storageUsed: 0,
-      recentRequests: []
-    }
+      recentRequests: [],
+    },
   })
   const [activeTab, setActiveTab] = useState<string | null>('all')
   const [activeView, setActiveView] = useState<'elements' | 'story'>('elements')
@@ -82,12 +79,15 @@ function App() {
   useEffect(() => {
     if (currentProject && elements.length >= 0) {
       // Auto-save will be handled by FileManager when file is opened
-      saveToStorage({
-        projects: [],
-        elements,
-        currentProjectId: currentProject.id
-      }, currentProject.id)
-      
+      saveToStorage(
+        {
+          projects: [],
+          elements,
+          currentProjectId: currentProject.id,
+        },
+        currentProject.id
+      )
+
       // Update user plan with current element count
       setUserPlan(prev => ({
         ...prev,
@@ -95,8 +95,8 @@ function App() {
         // Update storage usage estimation (rough approximation)
         usage: {
           ...prev.usage,
-          storageUsed: elements.reduce((acc, el) => acc + (el.content.length * 2), 0) // ~2 bytes per character as a rough estimate
-        }
+          storageUsed: elements.reduce((acc, el) => acc + el.content.length * 2, 0), // ~2 bytes per character as a rough estimate
+        },
       }))
     }
   }, [elements, currentProject])
@@ -104,12 +104,13 @@ function App() {
   // Filter elements based on search and type
   const filteredElements = useMemo(() => {
     return elements.filter(element => {
-      const matchesSearch = element.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           element.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           element.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-      
+      const matchesSearch =
+        element.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        element.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        element.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+
       const matchesType = !typeFilter || typeFilter === 'all' || element.type === typeFilter
-      
+
       // Define category groups using the simplified types
       const categoryGroups: Record<string, WorldElementType[]> = {
         all: [],
@@ -117,12 +118,12 @@ function App() {
         places: ['place'],
         objects: ['object'],
         events: ['event'],
-        concepts: ['concept']
+        concepts: ['concept'],
       }
-      
-      const matchesTab = activeTab === 'all' || 
-                        (categoryGroups[activeTab || '']?.includes(element.type))
-      
+
+      const matchesTab =
+        activeTab === 'all' || categoryGroups[activeTab || '']?.includes(element.type)
+
       return matchesSearch && matchesType && matchesTab
     })
   }, [elements, searchQuery, typeFilter, activeTab])
@@ -136,12 +137,16 @@ function App() {
     return stats
   }, [elements])
 
-  const handleSaveElement = (elementData: Partial<WorldElement>, isEditing: boolean, editingId?: string) => {
+  const handleSaveElement = (
+    elementData: Partial<WorldElement>,
+    isEditing: boolean,
+    editingId?: string
+  ) => {
     if (isEditing && editingId) {
       // Update existing element
-      setElements(prev => prev.map(el => 
-        el.id === editingId ? { ...el, ...elementData } as WorldElement : el
-      ))
+      setElements(prev =>
+        prev.map(el => (el.id === editingId ? ({ ...el, ...elementData } as WorldElement) : el))
+      )
     } else {
       // Create new element
       setElements(prev => [...prev, elementData as WorldElement])
@@ -180,7 +185,7 @@ function App() {
       id: crypto.randomUUID(),
       title: `${element.title} (Copy)`,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }
     setElements(prev => [...prev, duplicated])
   }
@@ -200,27 +205,30 @@ function App() {
     if (currentProject) {
       setCurrentProject({
         ...currentProject,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       })
     }
   }
-  
+
   const handleSaveStory = (storyContent: string) => {
     if (currentProject) {
       const updatedProject = {
         ...currentProject,
         storyContent,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
-      
+
       setCurrentProject(updatedProject)
-      
+
       // Save to storage
-      saveToStorage({
-        projects: [],
-        elements,
-        currentProjectId: updatedProject.id
-      }, updatedProject.id)
+      saveToStorage(
+        {
+          projects: [],
+          elements,
+          currentProjectId: updatedProject.id,
+        },
+        updatedProject.id
+      )
     }
   }
 
@@ -232,19 +240,19 @@ function App() {
         ...prev.usage,
         monthlyRequests: prev.usage.monthlyRequests + 1,
         dailyRequests: prev.usage.dailyRequests + 1,
-        tokensUsed: prev.usage.tokensUsed + (content.length / 4), // rough token estimate
+        tokensUsed: prev.usage.tokensUsed + content.length / 4, // rough token estimate
         recentRequests: [
           ...prev.usage.recentRequests,
           {
-            operation: "generate" as const,
+            operation: 'generate' as const,
             modelName: 'gpt-4o-mini',
             timestamp: new Date().toISOString(),
-            tokenCount: content.length / 4
-          }
-        ].slice(-20) // Keep only last 20 requests
-      }
+            tokenCount: content.length / 4,
+          },
+        ].slice(-20), // Keep only last 20 requests
+      },
     }))
-  
+
     const newElement: WorldElement = {
       id: crypto.randomUUID(),
       title: `New ${type.replace('-', ' ')}`,
@@ -252,7 +260,7 @@ function App() {
       type,
       tags: [],
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }
     setElements(prev => [...prev, newElement])
   }
@@ -269,7 +277,9 @@ function App() {
             modals.close('ai-prompt-dialog')
           }}
           onCancel={() => modals.close('ai-prompt-dialog')}
-          contextElements={elements.map(el => `${el.title}: ${el.content.replace(/<[^>]*>/g, '').substring(0, 200)}...`)}
+          contextElements={elements.map(
+            el => `${el.title}: ${el.content.replace(/<[^>]*>/g, '').substring(0, 200)}...`
+          )}
         />
       ),
     })
@@ -279,21 +289,24 @@ function App() {
     // Check if user has reached element limit based on their plan
     const currentPlan = userPlan.planType || 'basic'
     const entitlements = PLAN_ENTITLEMENTS[currentPlan]
-    
-    if (elements.length >= entitlements.elements && entitlements.elements !== Number.MAX_SAFE_INTEGER) {
+
+    if (
+      elements.length >= entitlements.elements &&
+      entitlements.elements !== Number.MAX_SAFE_INTEGER
+    ) {
       // Show element limit notification
       notifications.show({
         title: 'Element Limit Reached',
         message: `You've reached the maximum number of elements (${entitlements.elements}) for your ${currentPlan} plan. Please upgrade to add more elements.`,
         color: 'red',
-        icon: <IconUserCircle />
+        icon: <IconUserCircle />,
       })
-      
+
       // Open the account modal to encourage upgrade
       openAccountModal()
       return
     }
-    
+
     modals.open({
       modalId: 'world-element-editor-new',
       title: 'Create New Element',
@@ -314,10 +327,7 @@ function App() {
     })
   }
 
-  const typeOptions = [
-    { value: 'all', label: 'All Types' },
-    ...simpleElementTypeOptions
-  ]
+  const typeOptions = [{ value: 'all', label: 'All Types' }, ...simpleElementTypeOptions]
 
   const EmptyState = () => {
     if (!currentProject) {
@@ -330,7 +340,8 @@ function App() {
             <Stack align="center" gap="xs">
               <Title order={3}>Open or Create a Project</Title>
               <Text c="dimmed" ta="center" maw={400}>
-                Use the file menu above to create a new project or open an existing one to start building your world.
+                Use the file menu above to create a new project or open an existing one to start
+                building your world.
               </Text>
             </Stack>
           </Stack>
@@ -347,19 +358,15 @@ function App() {
           <Stack align="center" gap="xs">
             <Title order={3}>Start Building Your World</Title>
             <Text c="dimmed" ta="center" maw={400}>
-              Create characters, places, events, and more to bring your fictional world to life. 
-              Use AI assistance to generate rich, detailed content.
+              Create characters, places, events, and more to bring your fictional world to life. Use
+              AI assistance to generate rich, detailed content.
             </Text>
           </Stack>
           <Group>
             <Button leftSection={<IconPlus size={16} />} onClick={handleNewElement}>
               Create Element
             </Button>
-            <Button 
-              variant="light" 
-              leftSection={<IconBrain size={16} />} 
-              onClick={openAIDialog}
-            >
+            <Button variant="light" leftSection={<IconBrain size={16} />} onClick={openAIDialog}>
               AI Generate
             </Button>
           </Group>
@@ -367,7 +374,7 @@ function App() {
       </Center>
     )
   }
-  
+
   // Function to open account management modal
   const openAccountModal = () => {
     modals.open({
@@ -377,22 +384,25 @@ function App() {
       children: (
         <AccountPage
           userPlan={userPlan}
-          onChangePlan={(planType) => {
+          onChangePlan={planType => {
             // In a real app, this would handle Stripe checkout
             // For now, we'll just update the user plan directly
             setUserPlan(prev => ({
               ...prev,
               planType,
               subscriptionStatus: 'active',
-              subscriptionId: planType !== SUBSCRIPTION_PLANS.BASIC ? `sub_${crypto.randomUUID().slice(0, 8)}` : null
+              subscriptionId:
+                planType !== SUBSCRIPTION_PLANS.BASIC
+                  ? `sub_${crypto.randomUUID().slice(0, 8)}`
+                  : null,
             }))
             modals.close('account-management')
-            
+
             // Show success notification
             notifications.show({
               title: 'Plan Updated',
               message: `Your subscription has been updated to the ${planType.charAt(0).toUpperCase() + planType.slice(1)} plan.`,
-              color: 'green'
+              color: 'green',
             })
           }}
         />
@@ -412,18 +422,15 @@ function App() {
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
             <Group>
               <IconWorldWww size={28} color="#228be6" />
-              <Text size="xl" fw={600}>World Builder</Text>
+              <Text size="xl" fw={600}>
+                World Builder
+              </Text>
             </Group>
           </Group>
-          
+
           {/* Account Button */}
           <Tooltip label="Account & Subscription">
-            <ActionIcon
-              variant="subtle"
-              color="blue"
-              size="lg"
-              onClick={openAccountModal}
-            >
+            <ActionIcon variant="subtle" color="blue" size="lg" onClick={openAccountModal}>
               <IconUserCircle size={24} />
             </ActionIcon>
           </Tooltip>
@@ -433,13 +440,19 @@ function App() {
       <AppShell.Navbar p="md">
         <Stack>
           <Title order={4}>World Elements</Title>
-          
+
           <Paper p="sm" withBorder>
-            <Text size="sm" fw={500} mb="xs">Statistics</Text>
+            <Text size="sm" fw={500} mb="xs">
+              Statistics
+            </Text>
             <Stack gap="xs">
               <Group justify="space-between">
-                <Text size="xs" c="dimmed">Total Elements</Text>
-                <Text size="sm" fw={500}>{elements.length}</Text>
+                <Text size="xs" c="dimmed">
+                  Total Elements
+                </Text>
+                <Text size="sm" fw={500}>
+                  {elements.length}
+                </Text>
               </Group>
               {Object.entries(elementStats).map(([type, count]) => (
                 <Group key={type} justify="space-between">
@@ -453,16 +466,16 @@ function App() {
           </Paper>
 
           <Button.Group orientation="vertical">
-            <Button 
-              variant="light" 
+            <Button
+              variant="light"
               leftSection={<IconPlus size={16} />}
               onClick={handleNewElement}
               fullWidth
             >
               New Element
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               leftSection={<IconBrain size={16} />}
               onClick={openAIDialog}
               fullWidth
@@ -475,11 +488,11 @@ function App() {
 
       <AppShell.Main>
         <Container size="xl" px={0} h="100%">
-          <Stack style={{ minHeight: "calc(100vh - 100px)" }}>
+          <Stack style={{ minHeight: 'calc(100vh - 100px)' }}>
             {/* File Manager - More Compact */}
-            <Paper 
-              p="xs" 
-              withBorder 
+            <Paper
+              p="xs"
+              withBorder
               style={{
                 transition: 'all 0.2s ease',
               }}
@@ -497,17 +510,19 @@ function App() {
               <>
                 {/* Header Actions */}
                 <Group justify="space-between" align="center">
-                  <Title order={1}>{activeView === 'elements' ? 'World Elements' : 'Story Editor'}</Title>
+                  <Title order={1}>
+                    {activeView === 'elements' ? 'World Elements' : 'Story Editor'}
+                  </Title>
                   <Group>
                     <Button.Group>
-                      <Button 
+                      <Button
                         variant={activeView === 'elements' ? 'filled' : 'light'}
                         leftSection={<IconWorldWww size={16} />}
                         onClick={() => setActiveView('elements')}
                       >
                         Elements
                       </Button>
-                      <Button 
+                      <Button
                         variant={activeView === 'story' ? 'filled' : 'light'}
                         leftSection={<IconBook size={16} />}
                         onClick={() => setActiveView('story')}
@@ -515,16 +530,13 @@ function App() {
                         Story
                       </Button>
                     </Button.Group>
-                    
+
                     {activeView === 'elements' && (
                       <>
-                        <Button 
-                          leftSection={<IconPlus size={16} />}
-                          onClick={handleNewElement}
-                        >
+                        <Button leftSection={<IconPlus size={16} />} onClick={handleNewElement}>
                           Create New
                         </Button>
-                        <Button 
+                        <Button
                           variant="light"
                           leftSection={<IconBrain size={16} />}
                           onClick={openAIDialog}
@@ -544,7 +556,7 @@ function App() {
                         placeholder="Search elements..."
                         leftSection={<IconSearch size={16} />}
                         value={searchQuery}
-                        onChange={(event) => setSearchQuery(event.currentTarget.value)}
+                        onChange={event => setSearchQuery(event.currentTarget.value)}
                         style={{ flex: 1 }}
                       />
                       <Select
@@ -581,13 +593,17 @@ function App() {
                         </Tabs.Tab>
                       </Tabs.List>
                     </Tabs>
-                    
+
                     {/* Elements Grid */}
                     {filteredElements.length === 0 ? (
                       <EmptyState />
                     ) : (
-                      <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md" style={{ minHeight: "calc(100vh - 300px)" }}>
-                        {filteredElements.map((element) => (
+                      <SimpleGrid
+                        cols={{ base: 1, sm: 2, lg: 3 }}
+                        spacing="md"
+                        style={{ minHeight: 'calc(100vh - 300px)' }}
+                      >
+                        {filteredElements.map(element => (
                           <WorldElementCard
                             key={element.id}
                             element={element}
@@ -601,17 +617,17 @@ function App() {
                     )}
                   </>
                 )}
-                
+
                 {activeView === 'story' && (
-                  <StoryEditor 
+                  <StoryEditor
                     project={currentProject}
                     elements={elements}
                     onSave={handleSaveStory}
-                    onAddElements={(newElements) => {
+                    onAddElements={newElements => {
                       setElements(prev => [...prev, ...newElements])
                     }}
-                    onUpdateElements={(updatedElements) => {
-                      setElements(prev => 
+                    onUpdateElements={updatedElements => {
+                      setElements(prev =>
                         prev.map(el => {
                           const updated = updatedElements.find(u => u.id === el.id)
                           return updated ? { ...el, ...updated } : el
@@ -622,10 +638,8 @@ function App() {
                 )}
               </>
             )}
-            
-            {!currentProject && (
-              <EmptyState />
-            )}
+
+            {!currentProject && <EmptyState />}
           </Stack>
         </Container>
       </AppShell.Main>

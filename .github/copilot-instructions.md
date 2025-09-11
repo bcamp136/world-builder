@@ -5,6 +5,7 @@
 This is an AI-powered world building text editor built with React, Vite, TypeScript, and Mantine.
 
 ## Technology Stack
+
 - **Framework**: React 19 with TypeScript
 - **Build Tool**: Vite
 - **Component Library**: Mantine v8
@@ -14,6 +15,7 @@ This is an AI-powered world building text editor built with React, Vite, TypeScr
 - **Data Persistence**: Local Storage
 
 ## Application Features
+
 - **World Element Management**: Create, edit, delete, and organize different types of world building elements
 - **AI-Powered Content Generation**: Generate detailed content for characters, places, events, lore, plots, etc.
 - **Rich Text Editing**: Full-featured rich text editor for detailed content creation
@@ -22,6 +24,7 @@ This is an AI-powered world building text editor built with React, Vite, TypeScr
 - **Auto-save**: Automatic data persistence to browser local storage
 
 ## World Element Types
+
 - Characters: People, creatures, beings in your world
 - Places: Locations, cities, landmarks, realms
 - Events: Historical events, plot points, incidents
@@ -36,6 +39,7 @@ This is an AI-powered world building text editor built with React, Vite, TypeScr
 - Timelines: Historical progressions, chronologies
 
 ## Code Style Guidelines
+
 - Use TypeScript for all components and utilities
 - Follow React functional components with hooks
 - Use Mantine components and styling system
@@ -44,6 +48,7 @@ This is an AI-powered world building text editor built with React, Vite, TypeScr
 - Follow React best practices for state management
 
 ## AI Integration
+
 - The app uses Vercel's AI SDK for content generation
 - Supports both OpenAI and Anthropic providers
 - Pre-defined prompt templates for different world building elements
@@ -51,6 +56,7 @@ This is an AI-powered world building text editor built with React, Vite, TypeScr
 - Environment variables: VITE_OPENAI_API_KEY, VITE_ANTHROPIC_API_KEY
 
 ## Key Components
+
 - `App.tsx`: Main application with element management using Mantine's modal manager
 - `WorldElementCard.tsx`: Display card for world elements
 - `WorldElementEditorContent.tsx`: Rich text editor content for modal manager
@@ -59,6 +65,7 @@ This is an AI-powered world building text editor built with React, Vite, TypeScr
 - `utils/storage.ts`: Local storage persistence helpers
 
 ## Modal Management
+
 - Uses Mantine's `ModalsProvider` and `modals` manager for better UX
 - Modal content components are separate from modal wrappers
 - Centralized modal management with proper cleanup and state handling

@@ -34,18 +34,21 @@ VITE_APP_URL=http://localhost:5173
 3. Create three products matching our plans:
 
 ### Basic Plan
+
 - Name: World Builder Basic
 - Description: Access to essential world building features with 1,000 AI requests per month.
 - Price: $9.99/month recurring
 - Add metadata: `plan_type: basic`
 
 ### Pro Plan
+
 - Name: World Builder Pro
 - Description: Advanced world building features with 20,000 AI requests per month.
 - Price: $19.99/month recurring
 - Add metadata: `plan_type: pro`
 
 ### Enterprise Plan
+
 - Name: World Builder Enterprise
 - Description: Unlimited world building capabilities with advanced AI models.
 - Price: $49.99/month recurring
@@ -67,14 +70,14 @@ You can set up serverless functions using any of these approaches:
 
 The repo now includes TypeScript Vercel function handlers in the `/api` directory:
 
-| Endpoint | File | Method | Purpose |
-|----------|------|--------|---------|
-| /api/products | api/products.ts | GET | List active products |
-| /api/prices?product=prod_123 | api/prices.ts | GET | List prices for a product |
-| /api/create-checkout-session | api/create-checkout-session.ts | POST | Create subscription checkout session |
-| /api/customer-subscription?customerId=cus_123 | api/customer-subscription.ts | GET | Fetch active subscription |
-| /api/cancel-subscription | api/cancel-subscription.ts | POST | Cancel an active subscription |
-| /api/webhook | api/webhook.ts | POST | Receives Stripe webhook events |
+| Endpoint                                      | File                           | Method | Purpose                              |
+| --------------------------------------------- | ------------------------------ | ------ | ------------------------------------ |
+| /api/products                                 | api/products.ts                | GET    | List active products                 |
+| /api/prices?product=prod_123                  | api/prices.ts                  | GET    | List prices for a product            |
+| /api/create-checkout-session                  | api/create-checkout-session.ts | POST   | Create subscription checkout session |
+| /api/customer-subscription?customerId=cus_123 | api/customer-subscription.ts   | GET    | Fetch active subscription            |
+| /api/cancel-subscription                      | api/cancel-subscription.ts     | POST   | Cancel an active subscription        |
+| /api/webhook                                  | api/webhook.ts                 | POST   | Receives Stripe webhook events       |
 
 These are deployed automatically by Vercel (no additional configuration needed). Ensure `STRIPE_SECRET_KEY` is configured in your Vercel project settings (Environment Variables -> STRIPE_SECRET_KEY).
 
@@ -96,9 +99,11 @@ Webhook setup:
 2. Subscribe to events listed below (or all for testing)
 3. Add the signing secret (starts with `whsec_`) to Vercel env as `STRIPE_WEBHOOK_SECRET`
 4. For local testing:
+
 ```bash
 stripe listen --forward-to localhost:3000/api/webhook
 ```
+
 5. Copy the printed `webhook signing secret` into your local `.env` as `STRIPE_WEBHOOK_SECRET`
 
 ### Option 2: Using Netlify Functions
@@ -119,16 +124,16 @@ npm install express stripe cors dotenv
 3. Create a `server/index.js` file:
 
 ```javascript
-const express = require('express');
-const cors = require('cors');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-require('dotenv').config();
+const express = require('express')
+const cors = require('cors')
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
+require('dotenv').config()
 
-const app = express();
-const port = process.env.PORT || 3000;
+const app = express()
+const port = process.env.PORT || 3000
 
-app.use(cors());
-app.use(express.json());
+app.use(cors())
+app.use(express.json())
 
 // Get all products
 app.get('/api/products', async (req, res) => {
@@ -136,32 +141,32 @@ app.get('/api/products', async (req, res) => {
     const products = await stripe.products.list({
       active: true,
       limit: 100,
-    });
-    res.status(200).json(products.data);
+    })
+    res.status(200).json(products.data)
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 // Get prices for a product
 app.get('/api/prices', async (req, res) => {
   try {
-    const { product } = req.query;
+    const { product } = req.query
     const prices = await stripe.prices.list({
       product,
       active: true,
       limit: 100,
-    });
-    res.status(200).json(prices.data);
+    })
+    res.status(200).json(prices.data)
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 // Create checkout session
 app.post('/api/create-checkout-session', async (req, res) => {
   try {
-    const { priceId, customerId, successUrl, cancelUrl } = req.body;
+    const { priceId, customerId, successUrl, cancelUrl } = req.body
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -174,47 +179,47 @@ app.post('/api/create-checkout-session', async (req, res) => {
       success_url: successUrl,
       cancel_url: cancelUrl,
       ...(customerId ? { customer: customerId } : {}),
-    });
-    res.status(200).json({ id: session.id, url: session.url });
+    })
+    res.status(200).json({ id: session.id, url: session.url })
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 // Get customer subscription
 app.get('/api/customer-subscription/:customerId', async (req, res) => {
   try {
-    const { customerId } = req.params;
+    const { customerId } = req.params
     const subscriptions = await stripe.subscriptions.list({
       customer: customerId,
       status: 'active',
       expand: ['data.plan.product'],
-    });
-    
+    })
+
     if (subscriptions.data.length === 0) {
-      return res.status(404).json({ error: 'No active subscriptions found' });
+      return res.status(404).json({ error: 'No active subscriptions found' })
     }
-    
-    res.status(200).json(subscriptions.data[0]);
+
+    res.status(200).json(subscriptions.data[0])
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 // Cancel subscription
 app.post('/api/cancel-subscription/:subscriptionId', async (req, res) => {
   try {
-    const { subscriptionId } = req.params;
-    await stripe.subscriptions.cancel(subscriptionId);
-    res.status(200).json({ success: true });
+    const { subscriptionId } = req.params
+    await stripe.subscriptions.cancel(subscriptionId)
+    res.status(200).json({ success: true })
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+  console.log(`Server listening on port ${port}`)
+})
 ```
 
 4. Start the server:
@@ -240,7 +245,7 @@ For full integration, you should set up webhooks to handle subscription events (
 3. Subscribe to events:
    - `checkout.session.completed`
    - `invoice.paid`
-   - `invoice.payment_failed` 
+   - `invoice.payment_failed`
    - `customer.subscription.updated`
    - `customer.subscription.deleted`
 4. Create a webhook handler endpoint in your serverless functions

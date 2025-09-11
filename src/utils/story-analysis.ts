@@ -5,28 +5,30 @@ import { getProviders, isAIConfigured } from './ai'
  * Analyzes a story using AI to identify elements and consistency issues
  */
 export async function analyzeStory(
-  storyContent: string, 
-  existingElements: WorldElement[], 
+  storyContent: string,
+  existingElements: WorldElement[],
   _project: WorldProject // Unused but kept for API compatibility
 ): Promise<StoryAnalysisResult> {
   // Use the same provider logic as in ai.ts
   if (!isAIConfigured()) {
     throw new Error('No AI provider configured. Please add API keys in .env file.')
   }
-  
+
   const providers = getProviders()
   // Default to OpenAI, fallback to Anthropic if OpenAI key not available
   const provider = providers.openai || providers.anthropic
-  
+
   if (!provider) {
     throw new Error('No AI provider configured. Please add API keys in .env file.')
   }
-  
+
   // Prepare existing elements summary for context
   const elementsSummary = existingElements
-    .map(el => `${el.title} (${el.type}): ${el.content.replace(/<[^>]*>/g, '').substring(0, 100)}...`)
+    .map(
+      el => `${el.title} (${el.type}): ${el.content.replace(/<[^>]*>/g, '').substring(0, 100)}...`
+    )
     .join('\n\n')
-  
+
   // Create a prompt for the AI
   const analysisPrompt = `
   # Story Analysis Task
@@ -84,19 +86,19 @@ export async function analyzeStory(
   - Focus on substantive inconsistencies, not minor typos
   - For existing elements, suggest updates rather than creating duplicates
   - Ensure each element has a descriptive title and detailed content with relevant information
-  `;
+  `
 
   try {
     // Use the generateWorldElement function from ai.ts with a custom prompt
     // But we need to adapt it since it's designed for elements, not analysis
-    
+
     // Use the generateText function directly
     const { generateText } = await import('ai')
-    
+
     const isOpenAI = !!providers.openai
     const modelProvider = isOpenAI ? providers.openai! : providers.anthropic!
     const model = isOpenAI ? 'gpt-4-turbo' : 'claude-3-5-sonnet-20240620'
-    
+
     // Use more specific instructions to ensure we get comprehensive results
     const aiResponse = await generateText({
       model: modelProvider(model),
@@ -105,42 +107,41 @@ export async function analyzeStory(
       // Different providers might have different parameters for token limits
       // so we'll rely on the default implementation
     })
-    
+
     const responseText = aiResponse.text
-    
+
     // Extract the JSON from the response
-    const jsonMatch = responseText.match(/```json([\s\S]*?)```/) || 
-                      responseText.match(/{[\s\S]*}/)
-    
+    const jsonMatch = responseText.match(/```json([\s\S]*?)```/) || responseText.match(/{[\s\S]*}/)
+
     if (!jsonMatch) {
       throw new Error('Could not parse AI response as JSON')
     }
-    
+
     // Parse the JSON content
     const jsonContent = jsonMatch[1] || jsonMatch[0]
     const cleanedJson = jsonContent
       .replace(/```json/g, '')
       .replace(/```/g, '')
       .trim()
-    
+
     const analysisResult = JSON.parse(cleanedJson) as StoryAnalysisResult
-    
+
     // Add current date to result
     analysisResult.lastAnalyzed = new Date()
-    
+
     // Process elements to ensure they have proper dates
     analysisResult.elements = analysisResult.elements.map(element => {
       // For new elements, create new IDs
       if (!existingElements.find(e => e.id === element.id)) {
         element.id = crypto.randomUUID()
       }
-      
+
       // Ensure dates are actual Date objects
       element.createdAt = new Date()
       element.updatedAt = new Date()
       return element
     })
-    
+
     return analysisResult
   } catch (error) {
     console.error('Error analyzing story:', error)

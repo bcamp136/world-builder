@@ -1,18 +1,19 @@
-import React from 'react';
-import { Elements } from '@stripe/react-stripe-js';
-import { getStripe } from '../lib/stripe';
+import React, { useEffect, useState } from 'react'
+import { Elements } from '@stripe/react-stripe-js'
+import { getStripe } from '../lib/stripe'
 
 interface StripeProviderProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 export const StripeProvider: React.FC<StripeProviderProps> = ({ children }) => {
-  // Get the stripe instance
-  const stripePromise = getStripe();
+  const [stripePromise, setStripePromise] = useState<ReturnType<typeof getStripe>>()
 
-  return (
-    <Elements stripe={stripePromise}>
-      {children}
-    </Elements>
-  );
-};
+  useEffect(() => {
+    setStripePromise(getStripe())
+  }, [])
+
+  if (!stripePromise) return null // initial mount
+
+  return <Elements stripe={stripePromise}>{children}</Elements>
+}

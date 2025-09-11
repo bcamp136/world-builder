@@ -8,7 +8,7 @@ import {
   MultiSelect,
   Card,
   Text,
-  ActionIcon
+  ActionIcon,
 } from '@mantine/core'
 import { IconDeviceFloppy, IconX, IconWand } from '@tabler/icons-react'
 import { RichTextEditor } from '@mantine/tiptap'
@@ -25,11 +25,11 @@ interface WorldElementEditorContentProps {
   onAIAssist?: () => void
 }
 
-export function WorldElementEditorContent({ 
-  onSave, 
-  onCancel, 
-  element, 
-  onAIAssist 
+export function WorldElementEditorContent({
+  onSave,
+  onCancel,
+  element,
+  onAIAssist,
 }: WorldElementEditorContentProps) {
   const [title, setTitle] = useState('')
   const [type, setType] = useState<WorldElementType>('character')
@@ -66,7 +66,7 @@ export function WorldElementEditorContent({
       notifications.show({
         title: 'Title Required',
         message: 'Please enter a title for this element.',
-        color: 'yellow'
+        color: 'yellow',
       })
       return
     }
@@ -76,7 +76,7 @@ export function WorldElementEditorContent({
       type,
       tags,
       content,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }
 
     if (!element) {
@@ -88,11 +88,11 @@ export function WorldElementEditorContent({
     }
 
     onSave(elementData)
-    
+
     notifications.show({
       title: element ? 'Element Updated' : 'Element Created',
       message: `Your ${type} has been saved successfully.`,
-      color: 'green'
+      color: 'green',
     })
   }
 
@@ -103,14 +103,14 @@ export function WorldElementEditorContent({
           label="Title"
           placeholder="Enter a title..."
           value={title}
-          onChange={(event) => setTitle(event.currentTarget.value)}
+          onChange={event => setTitle(event.currentTarget.value)}
           required
         />
         <Select
           label="Type"
           data={simpleElementTypeOptions}
           value={type}
-          onChange={(value) => setType(value as WorldElementType)}
+          onChange={value => setType(value as WorldElementType)}
         />
       </Group>
 
@@ -127,11 +127,7 @@ export function WorldElementEditorContent({
         <Group justify="space-between" mb="md">
           <Text fw={500}>Content</Text>
           {onAIAssist && (
-            <ActionIcon
-              variant="light"
-              onClick={onAIAssist}
-              title="AI Assist"
-            >
+            <ActionIcon variant="light" onClick={onAIAssist} title="AI Assist">
               <IconWand size={16} />
             </ActionIcon>
           )}
@@ -183,24 +179,15 @@ export function WorldElementEditorContent({
             </RichTextEditor.ControlsGroup>
           </RichTextEditor.Toolbar>
 
-          <RichTextEditor.Content 
-            style={{ minHeight: 300 }}
-          />
+          <RichTextEditor.Content style={{ minHeight: 300 }} />
         </RichTextEditor>
       </Card>
 
       <Group justify="flex-end">
-        <Button
-          variant="light"
-          leftSection={<IconX size={16} />}
-          onClick={onCancel}
-        >
+        <Button variant="light" leftSection={<IconX size={16} />} onClick={onCancel}>
           Cancel
         </Button>
-        <Button
-          leftSection={<IconDeviceFloppy size={16} />}
-          onClick={handleSave}
-        >
+        <Button leftSection={<IconDeviceFloppy size={16} />} onClick={handleSave}>
           Save Element
         </Button>
       </Group>

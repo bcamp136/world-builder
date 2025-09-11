@@ -1,14 +1,5 @@
 import { useState } from 'react'
-import {
-  Group,
-  Menu,
-  ActionIcon,
-  Text,
-  Stack,
-  Alert,
-  Tooltip,
-  Badge
-} from '@mantine/core'
+import { Group, Menu, ActionIcon, Text, Stack, Alert, Tooltip, Badge } from '@mantine/core'
 import { modals } from '@mantine/modals'
 import {
   IconFolder,
@@ -18,7 +9,7 @@ import {
   IconUpload,
   IconDots,
   IconInfoCircle,
-  IconFolderPlus
+  IconFolderPlus,
 } from '@tabler/icons-react'
 import {
   isFileSystemAccessSupported,
@@ -26,7 +17,7 @@ import {
   loadProjectFromFile,
   downloadProjectFile,
   uploadProjectFile,
-  getCurrentProjectName
+  getCurrentProjectName,
 } from '../utils/storage'
 import type { WorldProject, WorldElement } from '../types'
 
@@ -37,11 +28,11 @@ interface FileManagerProps {
   onProjectSave?: () => void
 }
 
-export function FileManager({ 
-  currentProject, 
-  elements, 
+export function FileManager({
+  currentProject,
+  elements,
   onProjectLoad,
-  onProjectSave 
+  onProjectSave,
 }: FileManagerProps) {
   const [isSaving, setIsSaving] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -57,7 +48,8 @@ export function FileManager({
           <Text>Create a new project? Any unsaved changes will be lost.</Text>
           {!hasFileSystemSupport && (
             <Alert icon={<IconInfoCircle size={16} />} color="yellow" variant="light">
-              Your browser doesn't support advanced file operations. Projects will be downloaded/uploaded as files.
+              Your browser doesn't support advanced file operations. Projects will be
+              downloaded/uploaded as files.
             </Alert>
           )}
         </Stack>
@@ -69,7 +61,7 @@ export function FileManager({
           name: 'Untitled Project',
           description: 'A new world building project',
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         }
         onProjectLoad(newProject, [])
       },
@@ -89,7 +81,7 @@ export function FileManager({
             storyContent: projectData.storyContent,
             storyLastAnalyzed: projectData.storyLastAnalyzed,
             createdAt: projectData.createdAt,
-            updatedAt: projectData.updatedAt
+            updatedAt: projectData.updatedAt,
           }
           onProjectLoad(project, projectData.elements)
         }
@@ -99,7 +91,7 @@ export function FileManager({
       setIsLoading(false)
     } else {
       // Fallback: file upload
-      uploadProjectFile((projectData) => {
+      uploadProjectFile(projectData => {
         const project: WorldProject = {
           id: projectData.id,
           name: projectData.name,
@@ -107,7 +99,7 @@ export function FileManager({
           storyContent: projectData.storyContent,
           storyLastAnalyzed: projectData.storyLastAnalyzed,
           createdAt: projectData.createdAt,
-          updatedAt: projectData.updatedAt
+          updatedAt: projectData.updatedAt,
         }
         onProjectLoad(project, projectData.elements)
       })
@@ -128,7 +120,7 @@ export function FileManager({
         createdAt: currentProject.createdAt,
         updatedAt: new Date(),
         elements,
-        version: '1.0.0'
+        version: '1.0.0',
       }
 
       if (hasFileSystemSupport) {
@@ -155,7 +147,7 @@ export function FileManager({
       createdAt: currentProject.createdAt,
       updatedAt: new Date(),
       elements,
-      version: '1.0.0'
+      version: '1.0.0',
     }
 
     downloadProjectFile(projectData)
@@ -166,18 +158,29 @@ export function FileManager({
       <Group gap="xs">
         <IconFolder size={16} style={{ opacity: 0.7 }} />
         {currentProject ? (
-          <Text size="sm" fw={500} style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <Text
+            size="sm"
+            fw={500}
+            style={{
+              maxWidth: '200px',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
             {currentFileName || currentProject.name}
           </Text>
         ) : (
-          <Text size="sm" c="dimmed">No project loaded</Text>
+          <Text size="sm" c="dimmed">
+            No project loaded
+          </Text>
         )}
         <Badge size="sm">{elements.length} elements</Badge>
       </Group>
-      
+
       <Group gap={4}>
         <Tooltip label="Save Project" withArrow position="bottom">
-          <ActionIcon 
+          <ActionIcon
             size="sm"
             onClick={handleSaveProject}
             loading={isSaving}
@@ -190,26 +193,17 @@ export function FileManager({
         </Tooltip>
 
         <Tooltip label="New Project" withArrow position="bottom">
-          <ActionIcon 
-            size="sm"
-            onClick={handleNewProject}
-            variant="subtle"
-          >
+          <ActionIcon size="sm" onClick={handleNewProject} variant="subtle">
             <IconFolderPlus size={14} />
           </ActionIcon>
         </Tooltip>
-        
+
         <Tooltip label="Open Project" withArrow position="bottom">
-          <ActionIcon 
-            size="sm"
-            onClick={handleOpenProject}
-            disabled={isLoading}
-            variant="subtle"
-          >
+          <ActionIcon size="sm" onClick={handleOpenProject} disabled={isLoading} variant="subtle">
             <IconFolderOpen size={14} />
           </ActionIcon>
         </Tooltip>
-        
+
         <Menu shadow="md" width={200} position="bottom-end">
           <Tooltip label="More Options" withArrow position="bottom">
             <Menu.Target>
@@ -227,10 +221,7 @@ export function FileManager({
             >
               Export Project
             </Menu.Item>
-            <Menu.Item
-              leftSection={<IconUpload size={14} />}
-              onClick={handleOpenProject}
-            >
+            <Menu.Item leftSection={<IconUpload size={14} />} onClick={handleOpenProject}>
               Import Project
             </Menu.Item>
           </Menu.Dropdown>

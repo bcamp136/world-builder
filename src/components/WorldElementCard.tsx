@@ -1,8 +1,8 @@
 import { Card, Text, Badge, Group, ActionIcon, Menu, Button } from '@mantine/core'
-import { 
-  IconEdit, 
-  IconTrash, 
-  IconDots, 
+import {
+  IconEdit,
+  IconTrash,
+  IconDots,
   IconCopy,
   IconLink,
   IconUser,
@@ -41,7 +41,7 @@ import {
   IconChartBar,
   IconTimeline,
   IconRoad,
-  IconBook
+  IconBook,
 } from '@tabler/icons-react'
 import type { WorldElement } from '../types'
 
@@ -60,47 +60,47 @@ const elementIcons: Record<string, typeof IconUser> = {
   object: IconDiamond,
   event: IconCalendar,
   concept: IconSparkles,
-  
+
   // Extended types - using similar icons as their core categories
   'historical-event': IconCalendar,
-  'legend': IconBook2,
-  'myth': IconBook2,
-  'hero': IconUser,
+  legend: IconBook2,
+  myth: IconBook2,
+  hero: IconUser,
   'creation-story': IconBook2,
-  'prophecy': IconCrystalBall,
+  prophecy: IconCrystalBall,
   'power-system': IconBolt,
   'magic-system': IconWand,
-  'technology': IconRobot,
-  'artifact': IconDiamond,
-  'invention': IconBulb,
+  technology: IconRobot,
+  artifact: IconDiamond,
+  invention: IconBulb,
   'magical-rule': IconRuler,
   'intelligent-species': IconUsers,
-  'creature': IconPaw,
-  'monster': IconAlien,
+  creature: IconPaw,
+  monster: IconAlien,
   'supernatural-entity': IconGhost,
   'belief-system': IconHeartHandshake,
-  'deity': IconStar,
+  deity: IconStar,
   'spiritual-force': IconFlare,
   'religious-institution': IconBuilding,
-  'philosophy': IconBrain,
-  'war': IconSword,
-  'conflict': IconSwords,
+  philosophy: IconBrain,
+  war: IconSword,
+  conflict: IconSwords,
   'military-force': IconShield,
-  'strategy': IconChessKnight,
-  'threat': IconAlertTriangle,
-  'antagonist': IconSkull,
-  'npc': IconUser,
+  strategy: IconChessKnight,
+  threat: IconAlertTriangle,
+  antagonist: IconSkull,
+  npc: IconUser,
   'important-figure': IconCrown,
-  'relationship': IconHearts,
+  relationship: IconHearts,
   'trade-system': IconCoin,
-  'currency': IconCoin,
-  'resource': IconBox,
-  'industry': IconBuildingFactory,
+  currency: IconCoin,
+  resource: IconBox,
+  industry: IconBuildingFactory,
   'economic-class': IconChartBar,
-  'note': IconNote,
-  'timeline': IconTimeline,
-  'plot': IconRoad,
-  'lore': IconBook
+  note: IconNote,
+  timeline: IconTimeline,
+  plot: IconRoad,
+  lore: IconBook,
 }
 
 const elementColors: Record<string, string> = {
@@ -110,62 +110,76 @@ const elementColors: Record<string, string> = {
   object: 'violet',
   event: 'orange',
   concept: 'teal',
-  
+
   // Extended types - grouped by similar categories
   'historical-event': 'orange',
-  'legend': 'yellow',
-  'myth': 'yellow',
-  'hero': 'blue',
+  legend: 'yellow',
+  myth: 'yellow',
+  hero: 'blue',
   'creation-story': 'yellow',
-  'prophecy': 'yellow',
+  prophecy: 'yellow',
   'power-system': 'grape',
   'magic-system': 'grape',
-  'technology': 'indigo',
-  'artifact': 'violet',
-  'invention': 'indigo',
+  technology: 'indigo',
+  artifact: 'violet',
+  invention: 'indigo',
   'magical-rule': 'grape',
   'intelligent-species': 'blue',
-  'creature': 'lime',
-  'monster': 'red',
+  creature: 'lime',
+  monster: 'red',
   'supernatural-entity': 'purple',
   'belief-system': 'pink',
-  'deity': 'yellow',
+  deity: 'yellow',
   'spiritual-force': 'pink',
   'religious-institution': 'pink',
-  'philosophy': 'teal',
-  'war': 'red',
-  'conflict': 'red',
+  philosophy: 'teal',
+  war: 'red',
+  conflict: 'red',
   'military-force': 'orange',
-  'strategy': 'teal',
-  'threat': 'red',
-  'antagonist': 'red',
-  'npc': 'blue',
+  strategy: 'teal',
+  threat: 'red',
+  antagonist: 'red',
+  npc: 'blue',
   'important-figure': 'blue',
-  'relationship': 'pink',
+  relationship: 'pink',
   'trade-system': 'cyan',
-  'currency': 'cyan',
-  'resource': 'lime',
-  'industry': 'dark',
+  currency: 'cyan',
+  resource: 'lime',
+  industry: 'dark',
   'economic-class': 'gray',
-  'note': 'gray',
-  'timeline': 'orange',
-  'plot': 'blue',
-  'lore': 'yellow'
+  note: 'gray',
+  timeline: 'orange',
+  plot: 'blue',
+  lore: 'yellow',
 }
 
-export function WorldElementCard({ element, onEdit, onDelete, onDuplicate, onConnect }: WorldElementCardProps) {
+export function WorldElementCard({
+  element,
+  onEdit,
+  onDelete,
+  onDuplicate,
+  onConnect,
+}: WorldElementCardProps) {
   const IconComponent = elementIcons[element.type] || IconNote
   const color = elementColors[element.type] || 'gray'
 
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Card
+      shadow="sm"
+      padding="lg"
+      radius="md"
+      withBorder
+      style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+    >
       {/* Card Header with Title and Menu */}
       <Group justify="space-between" mb="xs">
         <Group>
           <IconComponent size={20} color={`var(--mantine-color-${color}-6)`} />
-          <Text fw={500} size="lg">{element.title}</Text>
+          <Text fw={500} size="lg">
+            {element.title}
+          </Text>
         </Group>
-        
+
         <Menu shadow="md" width={200}>
           <Menu.Target>
             <ActionIcon variant="subtle" color="gray">
@@ -184,7 +198,11 @@ export function WorldElementCard({ element, onEdit, onDelete, onDuplicate, onCon
               Connect
             </Menu.Item>
             <Menu.Divider />
-            <Menu.Item color="red" leftSection={<IconTrash size={14} />} onClick={() => onDelete(element.id)}>
+            <Menu.Item
+              color="red"
+              leftSection={<IconTrash size={14} />}
+              onClick={() => onDelete(element.id)}
+            >
               Delete
             </Menu.Item>
           </Menu.Dropdown>
@@ -196,7 +214,7 @@ export function WorldElementCard({ element, onEdit, onDelete, onDuplicate, onCon
         <Badge color={color} variant="light">
           {element.type.replace('-', ' ')}
         </Badge>
-        {element.tags.map((tag) => (
+        {element.tags.map(tag => (
           <Badge key={tag} variant="outline" size="sm">
             {tag}
           </Badge>

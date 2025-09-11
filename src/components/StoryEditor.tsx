@@ -18,10 +18,10 @@ import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import { notifications } from '@mantine/notifications'
 import { modals } from '@mantine/modals'
-import { 
-  IconBrain, 
-  IconDeviceFloppy, 
-  IconBook, 
+import {
+  IconBrain,
+  IconDeviceFloppy,
+  IconBook,
   IconClockHour4,
   IconCheck,
   IconAlertCircle,
@@ -30,7 +30,7 @@ import {
   IconUser,
   IconCalendarTime,
   IconMapPin,
-  IconWand
+  IconWand,
 } from '@tabler/icons-react'
 import type { WorldElement, WorldProject, ConsistencyIssue } from '../types'
 import { analyzeStory } from '../utils/story-analysis'
@@ -48,7 +48,7 @@ export function StoryEditor({
   elements,
   onSave,
   onAddElements,
-  onUpdateElements
+  onUpdateElements,
 }: StoryEditorProps) {
   const [content, setContent] = useState(project.storyContent || '')
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -63,7 +63,7 @@ export function StoryEditor({
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Placeholder.configure({ placeholder: 'Begin writing your story here...' })
+      Placeholder.configure({ placeholder: 'Begin writing your story here...' }),
     ],
     content,
     onUpdate: ({ editor }) => {
@@ -96,7 +96,7 @@ export function StoryEditor({
         handleSave()
       }
     }, 30000)
-    
+
     return () => clearInterval(interval)
   }, [content, project.storyContent, handleSave])
 
@@ -115,7 +115,7 @@ export function StoryEditor({
     setAnalysisProgress(0)
     setConsistencyIssues([])
     setDiscoveredElements([])
-    
+
     // Set active tab to editor while analyzing
     setActiveTab('editor')
 
@@ -130,25 +130,25 @@ export function StoryEditor({
 
       // Call the AI analysis utility
       const result = await analyzeStory(content, elements, project)
-      
+
       clearInterval(progressInterval)
       setAnalysisProgress(100)
 
       if (result.elements.length > 0) {
         setDiscoveredElements(result.elements)
-        
+
         // Automatically switch to the elements tab
         setActiveTab('elements')
-        
+
         // Create a more detailed notification with element names
         const elementNames = result.elements
           .map(el => el.title)
           .slice(0, 3)
-          .join(", ");
-          
-        const moreText = result.elements.length > 3 ? 
-          ` and ${result.elements.length - 3} more...` : "";
-          
+          .join(', ')
+
+        const moreText =
+          result.elements.length > 3 ? ` and ${result.elements.length - 3} more...` : ''
+
         notifications.show({
           title: 'New World Elements Discovered',
           message: `Found: ${elementNames}${moreText}. Click "Save All Elements" to add them to your world.`,
@@ -162,12 +162,12 @@ export function StoryEditor({
 
       if (result.consistencyIssues.length > 0) {
         setConsistencyIssues(result.consistencyIssues)
-        
+
         // Create a more detailed notification about issues
         const issueTypes = [...new Set(result.consistencyIssues.map(issue => issue.type))]
           .map(type => type.charAt(0).toUpperCase() + type.slice(1))
-          .join(", ");
-          
+          .join(', ')
+
         notifications.show({
           title: 'Consistency Issues Found',
           message: `Detected ${result.consistencyIssues.length} issues related to: ${issueTypes}. Check the "Consistency Issues" tab.`,
@@ -189,7 +189,7 @@ export function StoryEditor({
           message: 'No new elements or issues were found in your story.',
           color: 'blue',
         })
-        
+
         // Stay on the editor tab if nothing was found
         setActiveTab('editor')
       }
@@ -199,7 +199,7 @@ export function StoryEditor({
         message: error instanceof Error ? error.message : 'An unknown error occurred',
         color: 'red',
       })
-      
+
       // Return to editor tab on error
       setActiveTab('editor')
     } finally {
@@ -210,52 +210,56 @@ export function StoryEditor({
   // Handle saving discovered elements
   const handleSaveElements = useCallback(() => {
     // Filter elements into new ones and updates
-    const newElements = discoveredElements.filter(el => !elements.find(existing => existing.id === el.id))
-    const updatedElements = discoveredElements.filter(el => elements.find(existing => existing.id === el.id))
-    
+    const newElements = discoveredElements.filter(
+      el => !elements.find(existing => existing.id === el.id)
+    )
+    const updatedElements = discoveredElements.filter(el =>
+      elements.find(existing => existing.id === el.id)
+    )
+
     if (newElements.length) onAddElements(newElements)
     if (updatedElements.length) onUpdateElements(updatedElements)
-    
+
     setDiscoveredElements([])
-    
+
     // Switch back to editor tab after saving
     setActiveTab('editor')
-    
+
     notifications.show({
       title: 'Elements Saved',
       message: `Added ${newElements.length} new elements and updated ${updatedElements.length} existing ones.`,
       color: 'green',
     })
   }, [discoveredElements, elements, onAddElements, onUpdateElements, setActiveTab])
-  
+
   // Handle loading Alice in Wonderland demo text
   const [isLoadingDemo, setIsLoadingDemo] = useState(false)
-  
+
   const loadDemoText = useCallback(async () => {
     setIsLoadingDemo(true)
-    
+
     try {
       // Import the local Alice in Wonderland text file
       const { aliceInWonderland } = await import('../assets/alice')
-      
+
       // Use the imported text
       let text = aliceInWonderland
-      
+
       // Clean up the text a bit - remove Project Gutenberg headers and footers
       // Find the actual start of the book content
       const startMarker = "ALICE'S ADVENTURES IN WONDERLAND"
-      const endMarker = "*** END OF THE PROJECT GUTENBERG EBOOK"
-      
+      const endMarker = '*** END OF THE PROJECT GUTENBERG EBOOK'
+
       const startIndex = text.indexOf(startMarker)
       const endIndex = text.indexOf(endMarker)
-      
+
       if (startIndex !== -1 && endIndex !== -1) {
         text = text.slice(startIndex, endIndex).trim()
       }
-      
+
       // Format chapter titles with h2 tags
-      text = text.replace(/CHAPTER [IVX]+\. [^\n]+/g, match => `\n\n<h2>${match}</h2>\n\n`);
-      
+      text = text.replace(/CHAPTER [IVX]+\. [^\n]+/g, match => `\n\n<h2>${match}</h2>\n\n`)
+
       // Convert plain text to HTML paragraphs for the editor
       const htmlContent = text
         .split('\n\n')
@@ -263,26 +267,26 @@ export function StoryEditor({
         .filter(paragraph => paragraph.length > 0)
         .map(paragraph => {
           // Skip paragraphs already wrapped in HTML tags
-          if (paragraph.startsWith('<')) return paragraph;
-          return `<p>${paragraph.replace(/\n/g, ' ')}</p>`;
+          if (paragraph.startsWith('<')) return paragraph
+          return `<p>${paragraph.replace(/\n/g, ' ')}</p>`
         })
         .join('')
-      
+
       // Set the content in the editor
       if (editor) {
         editor.commands.setContent(htmlContent)
         setContent(htmlContent)
-        
+
         // Save it to the project
         onSave(htmlContent)
         setLastSaved(new Date())
-        
+
         // Ensure we're in the editor tab
         setActiveTab('editor')
-        
+
         notifications.show({
           title: 'Demo Text Loaded',
-          message: 'Alice\'s Adventures in Wonderland has been loaded. Try analyzing it with AI!',
+          message: "Alice's Adventures in Wonderland has been loaded. Try analyzing it with AI!",
           color: 'blue',
         })
       }
@@ -296,7 +300,7 @@ export function StoryEditor({
       setIsLoadingDemo(false)
     }
   }, [editor, onSave, setContent, setActiveTab])
-  
+
   // Show confirmation dialog before loading demo text
   const handleLoadDemoText = useCallback(() => {
     // Check if there's existing content to avoid accidental overwriting
@@ -306,37 +310,47 @@ export function StoryEditor({
         title: 'Load Demo Text',
         children: (
           <Text size="sm">
-            Loading "Alice's Adventures in Wonderland" will replace your current content. Are you sure you want to continue?
+            Loading "Alice's Adventures in Wonderland" will replace your current content. Are you
+            sure you want to continue?
           </Text>
         ),
         labels: { confirm: 'Yes, Load Demo', cancel: 'Cancel' },
         confirmProps: { color: 'blue' },
-        onConfirm: loadDemoText
-      });
+        onConfirm: loadDemoText,
+      })
     } else {
       // If there's no significant content, load directly
-      loadDemoText();
+      loadDemoText()
     }
   }, [content, loadDemoText])
 
   // Get issue severity color
   const getIssueSeverityColor = (severity: ConsistencyIssue['severity']) => {
     switch (severity) {
-      case 'info': return 'blue'
-      case 'warning': return 'yellow'
-      case 'error': return 'red'
-      default: return 'gray'
+      case 'info':
+        return 'blue'
+      case 'warning':
+        return 'yellow'
+      case 'error':
+        return 'red'
+      default:
+        return 'gray'
     }
   }
 
   // Get issue type icon
   const getIssueTypeIcon = (type: ConsistencyIssue['type']) => {
     switch (type) {
-      case 'character': return <IconUser size={16} />
-      case 'timeline': return <IconCalendarTime size={16} />
-      case 'setting': return <IconMapPin size={16} />
-      case 'plot': return <IconBook size={16} />
-      default: return <IconInfoCircle size={16} />
+      case 'character':
+        return <IconUser size={16} />
+      case 'timeline':
+        return <IconCalendarTime size={16} />
+      case 'setting':
+        return <IconMapPin size={16} />
+      case 'plot':
+        return <IconBook size={16} />
+      default:
+        return <IconInfoCircle size={16} />
     }
   }
 
@@ -358,11 +372,7 @@ export function StoryEditor({
               Last saved: {lastSaved.toLocaleTimeString()}
             </Text>
           )}
-          <Button 
-            leftSection={<IconDeviceFloppy size={16} />}
-            onClick={handleSave}
-            variant="light"
-          >
+          <Button leftSection={<IconDeviceFloppy size={16} />} onClick={handleSave} variant="light">
             Save
           </Button>
           <Button
@@ -398,34 +408,39 @@ export function StoryEditor({
       )}
 
       {/* Tabbed Interface */}
-      <Tabs value={activeTab} onChange={setActiveTab} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <Tabs
+        value={activeTab}
+        onChange={setActiveTab}
+        style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
+      >
         <Tabs.List>
-          <Tabs.Tab 
-            value="editor" 
-            leftSection={<IconBook size={16} />}
-          >
+          <Tabs.Tab value="editor" leftSection={<IconBook size={16} />}>
             Editor
           </Tabs.Tab>
-          <Tabs.Tab 
-            value="elements" 
+          <Tabs.Tab
+            value="elements"
             leftSection={<IconListDetails size={16} />}
             disabled={discoveredElements.length === 0}
             rightSection={
-              discoveredElements.length > 0 ? 
-                <Badge size="sm" color="green">{discoveredElements.length}</Badge> : 
-                undefined
+              discoveredElements.length > 0 ? (
+                <Badge size="sm" color="green">
+                  {discoveredElements.length}
+                </Badge>
+              ) : undefined
             }
           >
             Discovered Elements
           </Tabs.Tab>
-          <Tabs.Tab 
-            value="issues" 
+          <Tabs.Tab
+            value="issues"
             leftSection={<IconAlertCircle size={16} />}
             disabled={consistencyIssues.length === 0}
             rightSection={
-              consistencyIssues.length > 0 ? 
-                <Badge size="sm" color="yellow">{consistencyIssues.length}</Badge> : 
-                undefined
+              consistencyIssues.length > 0 ? (
+                <Badge size="sm" color="yellow">
+                  {consistencyIssues.length}
+                </Badge>
+              ) : undefined
             }
           >
             Consistency Issues
@@ -463,12 +478,12 @@ export function StoryEditor({
                   </RichTextEditor.ControlsGroup>
                 </RichTextEditor.Toolbar>
 
-                <RichTextEditor.Content 
-                  style={{ 
-                    height: '60vh', 
+                <RichTextEditor.Content
+                  style={{
+                    height: '60vh',
                     overflowY: 'auto',
-                    background: 'var(--mantine-color-body)'
-                  }} 
+                    background: 'var(--mantine-color-body)',
+                  }}
                 />
               </RichTextEditor>
             )}
@@ -485,8 +500,8 @@ export function StoryEditor({
                   <Title order={3}>Discovered World Elements</Title>
                   <Badge size="lg">{discoveredElements.length}</Badge>
                 </Group>
-                <Button 
-                  onClick={handleSaveElements} 
+                <Button
+                  onClick={handleSaveElements}
                   leftSection={<IconCheck size={16} />}
                   variant="filled"
                   color="green"
@@ -495,21 +510,30 @@ export function StoryEditor({
                   Save All Elements
                 </Button>
               </Group>
-              
+
               <Alert color="green" title="Action Required" icon={<IconCheck size={16} />} mb="md">
-                These elements were discovered in your story. Review them and click "Save All Elements" to add them to your world.
+                These elements were discovered in your story. Review them and click "Save All
+                Elements" to add them to your world.
               </Alert>
-              
+
               <Stack gap="md" style={{ overflowY: 'auto' }}>
-                {discoveredElements.map((element) => (
-                  <Card key={element.id} withBorder shadow="sm" p="md" style={{ background: 'var(--mantine-color-body)' }}>
+                {discoveredElements.map(element => (
+                  <Card
+                    key={element.id}
+                    withBorder
+                    shadow="sm"
+                    p="md"
+                    style={{ background: 'var(--mantine-color-body)' }}
+                  >
                     <Group justify="space-between" mb="xs">
                       <Group>
                         <Badge size="lg">{element.type}</Badge>
                         <Title order={4}>{element.title}</Title>
                       </Group>
                       <Text size="sm" c="dimmed" fw={500}>
-                        {elements.find(e => e.id === element.id) ? '🔄 Update Existing' : '🆕 New Element'}
+                        {elements.find(e => e.id === element.id)
+                          ? '🔄 Update Existing'
+                          : '🆕 New Element'}
                       </Text>
                     </Group>
                     <Text size="sm" mt="xs">
@@ -520,9 +544,20 @@ export function StoryEditor({
               </Stack>
             </Paper>
           ) : (
-            <Paper withBorder p="xl" style={{ height: '60vh', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'var(--mantine-color-body)' }}>
+            <Paper
+              withBorder
+              p="xl"
+              style={{
+                height: '60vh',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                background: 'var(--mantine-color-body)',
+              }}
+            >
               <Text c="dimmed" ta="center">
-                No elements have been discovered yet.<br />
+                No elements have been discovered yet.
+                <br />
                 Use "Analyze with AI" to detect world elements in your story.
               </Text>
             </Paper>
@@ -536,13 +571,20 @@ export function StoryEditor({
               <Group mb="md">
                 <IconAlertCircle size={18} />
                 <Title order={3}>Consistency Issues</Title>
-                <Badge size="lg" color="yellow">{consistencyIssues.length}</Badge>
+                <Badge size="lg" color="yellow">
+                  {consistencyIssues.length}
+                </Badge>
               </Group>
-              
-              <Alert color="yellow" title="Issues Detected" icon={<IconAlertCircle size={16} />} mb="md">
+
+              <Alert
+                color="yellow"
+                title="Issues Detected"
+                icon={<IconAlertCircle size={16} />}
+                mb="md"
+              >
                 The AI has detected potential consistency issues in your story. Review them below.
               </Alert>
-              
+
               <Stack gap="md" style={{ height: '60vh', overflowY: 'auto' }}>
                 {consistencyIssues.map((issue, index) => (
                   <Alert
@@ -551,12 +593,16 @@ export function StoryEditor({
                     title={
                       <Group gap="xs">
                         {getIssueTypeIcon(issue.type)}
-                        <Text fw={500}>{issue.type.charAt(0).toUpperCase() + issue.type.slice(1)} Issue</Text>
+                        <Text fw={500}>
+                          {issue.type.charAt(0).toUpperCase() + issue.type.slice(1)} Issue
+                        </Text>
                       </Group>
                     }
                     icon={<IconAlertCircle size={16} />}
                   >
-                    <Text size="sm" fw={500} mb="xs">{issue.description}</Text>
+                    <Text size="sm" fw={500} mb="xs">
+                      {issue.description}
+                    </Text>
                     {issue.textLocation && (
                       <Text size="sm" fs="italic" mt="xs" c="dimmed">
                         Context: "{issue.textLocation}"
@@ -572,9 +618,20 @@ export function StoryEditor({
               </Stack>
             </Paper>
           ) : (
-            <Paper withBorder p="xl" style={{ height: '60vh', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'var(--mantine-color-body)' }}>
+            <Paper
+              withBorder
+              p="xl"
+              style={{
+                height: '60vh',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                background: 'var(--mantine-color-body)',
+              }}
+            >
               <Text c="dimmed" ta="center">
-                No consistency issues have been detected.<br />
+                No consistency issues have been detected.
+                <br />
                 Use "Analyze with AI" to check for potential issues in your story.
               </Text>
             </Paper>

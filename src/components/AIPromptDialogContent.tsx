@@ -1,15 +1,5 @@
 import { useState } from 'react'
-import {
-  Text,
-  Textarea,
-  Button,
-  Group,
-  Select,
-  Stack,
-  Card,
-  Divider,
-  Alert
-} from '@mantine/core'
+import { Text, Textarea, Button, Group, Select, Stack, Card, Divider, Alert } from '@mantine/core'
 import { IconInfoCircle, IconWand } from '@tabler/icons-react'
 import { notifications } from '@mantine/notifications'
 import { generateWorldElementWithUsageLimit, isAIConfigured } from '../lib/ai-usage'
@@ -23,11 +13,11 @@ interface AIPromptDialogContentProps {
   contextElements?: string[]
 }
 
-export function AIPromptDialogContent({ 
-  onGenerated, 
+export function AIPromptDialogContent({
+  onGenerated,
   onCancel,
   initialType = 'character',
-  contextElements = []
+  contextElements = [],
 }: AIPromptDialogContentProps) {
   const [selectedType, setSelectedType] = useState<WorldElementType>(initialType)
   const [userPrompt, setUserPrompt] = useState('')
@@ -41,7 +31,7 @@ export function AIPromptDialogContent({
       notifications.show({
         title: 'Prompt Required',
         message: 'Please enter a prompt to generate content.',
-        color: 'yellow'
+        color: 'yellow',
       })
       return
     }
@@ -50,16 +40,15 @@ export function AIPromptDialogContent({
       notifications.show({
         title: 'AI Not Configured',
         message: 'Please add your AI API keys to the .env file to use AI features.',
-        color: 'red'
+        color: 'red',
       })
       return
     }
 
     setIsGenerating(true)
     try {
-      const additionalContext = contextElements.length > 0 
-        ? contextElements.join('\n\n') 
-        : undefined
+      const additionalContext =
+        contextElements.length > 0 ? contextElements.join('\n\n') : undefined
 
       const content = await generateWorldElementWithUsageLimit(
         'user-1', // In a real implementation, this would be the user's ID
@@ -75,13 +64,13 @@ export function AIPromptDialogContent({
       notifications.show({
         title: 'Content Generated!',
         message: 'Your AI-generated content is ready for editing.',
-        color: 'green'
+        color: 'green',
       })
     } catch (error) {
       notifications.show({
         title: 'Generation Failed',
         message: error instanceof Error ? error.message : 'Failed to generate content',
-        color: 'red'
+        color: 'red',
       })
     } finally {
       setIsGenerating(false)
@@ -90,17 +79,13 @@ export function AIPromptDialogContent({
 
   const elementOptions = promptTemplates.map(template => ({
     value: template.type,
-    label: template.name
+    label: template.name,
   }))
 
   return (
     <Stack>
       {!isAIConfigured() && (
-        <Alert
-          icon={<IconInfoCircle size={16} />}
-          title="AI Configuration Required"
-          color="yellow"
-        >
+        <Alert icon={<IconInfoCircle size={16} />} title="AI Configuration Required" color="yellow">
           To use AI features, add your API keys to a .env file:
           <br />
           <code>VITE_OPENAI_API_KEY=your_key_here</code>
@@ -114,16 +99,16 @@ export function AIPromptDialogContent({
           label="Content Type"
           data={elementOptions}
           value={selectedType}
-          onChange={(value) => setSelectedType(value as WorldElementType)}
+          onChange={value => setSelectedType(value as WorldElementType)}
         />
         <Select
           label="AI Provider"
           data={[
             { value: 'openai', label: 'OpenAI GPT-4' },
-            { value: 'anthropic', label: 'Anthropic Claude' }
+            { value: 'anthropic', label: 'Anthropic Claude' },
           ]}
           value={provider}
-          onChange={(value) => setProvider(value as 'openai' | 'anthropic')}
+          onChange={value => setProvider(value as 'openai' | 'anthropic')}
         />
       </Group>
 
@@ -142,7 +127,7 @@ export function AIPromptDialogContent({
         label="Your Prompt"
         placeholder="Describe what you want to create... (e.g., 'A mysterious wizard who lives in a tower')"
         value={userPrompt}
-        onChange={(event) => setUserPrompt(event.currentTarget.value)}
+        onChange={event => setUserPrompt(event.currentTarget.value)}
         minRows={3}
         maxRows={6}
         autosize

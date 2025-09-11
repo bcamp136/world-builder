@@ -7,6 +7,7 @@ This document outlines the implementation of subscription pricing plans for the 
 The application offers three subscription tiers:
 
 ### Basic Plan ($9.99/month)
+
 - 1,000 AI requests per month
 - Access to basic AI models only (gpt-4o-mini)
 - 1 GB storage limit
@@ -14,6 +15,7 @@ The application offers three subscription tiers:
 - Rate limit: 5 requests/minute
 
 ### Pro Plan ($19.99/month)
+
 - 20,000 AI requests per month
 - Access to standard and advanced AI models
 - 20 GB storage limit
@@ -21,6 +23,7 @@ The application offers three subscription tiers:
 - Rate limit: 20 requests/minute
 
 ### Enterprise Plan ($49.99/month)
+
 - Unlimited AI requests
 - Access to all AI models including premium ones
 - 200 GB storage limit

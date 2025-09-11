@@ -28,7 +28,7 @@ declare global {
         accept: Record<string, string[]>
       }>
     }): Promise<FileSystemFileHandle>
-    
+
     showOpenFilePicker(options?: {
       types?: Array<{
         description: string
@@ -49,21 +49,26 @@ export function isFileSystemAccessSupported(): boolean {
 }
 
 // Utility functions for file operations
-export async function saveProjectToFile(projectData: ProjectData, fileHandle?: FileSystemFileHandle): Promise<FileSystemFileHandle> {
+export async function saveProjectToFile(
+  projectData: ProjectData,
+  fileHandle?: FileSystemFileHandle
+): Promise<FileSystemFileHandle> {
   try {
     let handle = fileHandle
-    
+
     if (!handle && isFileSystemAccessSupported()) {
       // Show save dialog
       handle = await window.showSaveFilePicker({
         suggestedName: `${projectData.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`,
-        types: [{
-          description: 'World Builder Project',
-          accept: { 'application/json': ['.json'] }
-        }]
+        types: [
+          {
+            description: 'World Builder Project',
+            accept: { 'application/json': ['.json'] },
+          },
+        ],
       })
     }
-    
+
     if (handle) {
       // Use File System Access API
       const writable = await handle.createWritable()
@@ -90,19 +95,21 @@ export async function loadProjectFromFile(): Promise<ProjectData | null> {
     if (!isFileSystemAccessSupported()) {
       throw new Error('File System Access API not supported')
     }
-    
+
     const [fileHandle] = await window.showOpenFilePicker({
-      types: [{
-        description: 'World Builder Project',
-        accept: { 'application/json': ['.json'] }
-      }],
-      multiple: false
+      types: [
+        {
+          description: 'World Builder Project',
+          accept: { 'application/json': ['.json'] },
+        },
+      ],
+      multiple: false,
     })
-    
+
     const file = await fileHandle.getFile()
     const text = await file.text()
     const projectData: ProjectData = JSON.parse(text)
-    
+
     // Convert date strings back to Date objects
     projectData.createdAt = new Date(projectData.createdAt)
     projectData.updatedAt = new Date(projectData.updatedAt)
@@ -115,7 +122,7 @@ export async function loadProjectFromFile(): Promise<ProjectData | null> {
         element.updatedAt = new Date(element.updatedAt)
       })
     }
-    
+
     currentProjectFileHandle = fileHandle
     currentProjectPath = fileHandle.name
     return projectData
@@ -130,7 +137,7 @@ export function downloadProjectFile(projectData: ProjectData): void {
   const dataStr = JSON.stringify(projectData, null, 2)
   const dataBlob = new Blob([dataStr], { type: 'application/json' })
   const url = URL.createObjectURL(dataBlob)
-  
+
   const link = document.createElement('a')
   link.href = url
   link.download = `${projectData.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`
@@ -144,14 +151,14 @@ export function uploadProjectFile(onLoad: (projectData: ProjectData) => void): v
   const input = document.createElement('input')
   input.type = 'file'
   input.accept = '.json'
-  input.onchange = (event) => {
+  input.onchange = event => {
     const file = (event.target as HTMLInputElement).files?.[0]
     if (file) {
       const reader = new FileReader()
-      reader.onload = (e) => {
+      reader.onload = e => {
         try {
           const projectData: ProjectData = JSON.parse(e.target?.result as string)
-          
+
           // Convert date strings back to Date objects
           projectData.createdAt = new Date(projectData.createdAt)
           projectData.updatedAt = new Date(projectData.updatedAt)
@@ -164,7 +171,7 @@ export function uploadProjectFile(onLoad: (projectData: ProjectData) => void): v
               element.updatedAt = new Date(element.updatedAt)
             })
           }
-          
+
           onLoad(projectData)
         } catch (error) {
           console.error('Failed to parse project file:', error)
@@ -186,9 +193,9 @@ export async function saveToStorage(data: StoredData, projectId?: string): Promi
       name: 'Untitled Project',
       description: undefined,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }
-    
+
     const projectData: ProjectData = {
       id: projectId,
       name: project.name,
@@ -198,9 +205,9 @@ export async function saveToStorage(data: StoredData, projectId?: string): Promi
       elements: data.elements,
       storyContent: project.storyContent,
       storyLastAnalyzed: project.storyLastAnalyzed,
-      version: '1.0.0'
+      version: '1.0.0',
     }
-    
+
     try {
       const writable = await currentProjectFileHandle.createWritable()
       await writable.write(JSON.stringify(projectData, null, 2))
@@ -217,7 +224,7 @@ export function loadFromStorage(): StoredData {
   return {
     projects: [],
     elements: [],
-    currentProjectId: undefined
+    currentProjectId: undefined,
   }
 }
 
@@ -234,7 +241,7 @@ export function createProject(name: string, description?: string): WorldProject 
     name,
     description,
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   }
 }
 
@@ -260,9 +267,9 @@ export function useAutoSave(elements: WorldElement[], currentProject?: WorldProj
         elements,
         storyContent: currentProject.storyContent,
         storyLastAnalyzed: currentProject.storyLastAnalyzed,
-        version: '1.0.0'
+        version: '1.0.0',
       }
-      
+
       try {
         const writable = await currentProjectFileHandle.createWritable()
         await writable.write(JSON.stringify(projectData, null, 2))
