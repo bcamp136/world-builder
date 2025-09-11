@@ -1,4 +1,4 @@
-import type { WorldElement, WorldProject, StoryAnalysisResult, ConsistencyIssue } from '../types'
+import type { WorldElement, WorldProject, StoryAnalysisResult } from '../types'
 import { getProviders, isAIConfigured } from './ai'
 
 /**
