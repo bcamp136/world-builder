@@ -44,7 +44,88 @@ World Builder is a comprehensive tool for creating and managing fictional worlds
 - **Rich Text**: Mantine's Tiptap editor integration
 - **AI Integration**: Vercel AI SDK with OpenAI and Anthropic support
 - **Icons**: Tabler Icons React
+- **Payments**: Stripe (Checkout Sessions, subscription plans)
+- **Auth & Data**: Firebase (Authentication, Firestore, Storage)
 - **Storage**: Modern File System Access API with localStorage fallback
+
+## 🔐 Firebase & Stripe Integration
+
+The application integrates Firebase for authentication and user profile storage, and Stripe for subscription billing. A Firestore `users` collection stores user profile data alongside a `stripeCustomerId` once created.
+
+### Environment Variables
+
+Add these Firebase keys (client‑side) to your `.env` (Vite will expose variables prefixed with `VITE_`). Never commit real secret values.
+
+```env
+VITE_FIREBASE_API_KEY=YOUR_API_KEY
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=###########
+VITE_FIREBASE_APP_ID=1:###########:web:############
+```
+
+Stripe variables (server & client):
+
+```env
+STRIPE_SECRET_KEY=sk_live_xxx_or_test_key
+VITE_STRIPE_PUBLISHABLE_KEY=pk_live_xxx_or_test_key
+VITE_API_BASE_URL=http://localhost:3000   # or your deployed base
+```
+
+### Firestore Security Rules (Suggested Baseline)
+
+```bash
+// Firestore rules example (add via Firebase console)
+rules_version = '2';
+service cloud.firestore {
+   match /databases/{database}/documents {
+      match /users/{userId} {
+         allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+   }
+}
+```
+
+### Stripe Customer Creation Flow
+
+1. User signs up / logs in via Firebase Auth.  
+2. When the account page loads, the app lazily calls `/api/create-stripe-customer` with the Firebase UID in an Authorization header.  
+3. The serverless function checks Firestore for an existing `stripeCustomerId`; if missing it creates one via Stripe and updates the Firestore `users/{uid}` document.  
+4. Checkout buttons pass the `stripeCustomerId` so subscription checkout sessions are associated correctly.
+
+### Adding Additional Subscription Logic
+
+Implement in the existing `api/webhook.ts` handler:
+
+- `checkout.session.completed` → set `subscriptionId` & `subscriptionStatus` on user
+- `customer.subscription.updated` → sync plan changes & status
+- `customer.subscription.deleted` → downgrade plan and clear entitlements
+
+### Firebase Storage (Future Use)
+
+You can migrate large world assets (maps, images) to Firebase Storage. Store metadata (download URLs) on the world elements referencing those assets.
+
+### Local Development Checklist
+
+1. Create Firebase project & enable Email/Password auth.  
+2. Create Firestore database (production mode).  
+3. Add environment variables in `.env`.  
+4. Run `npm install` (ensures `firebase` is installed).  
+5. Start dev server: `npm run dev`.  
+6. Sign up via Account page and verify Firestore `users` document.  
+7. Trigger plan upgrade to confirm Stripe customer + Checkout session creation.  
+
+### Production Hardening TODOs
+
+- Verify Firebase ID token server-side (instead of trusting raw UID in header).  
+- Move Stripe secret interactions to secure serverless functions only.  
+- Add retry + idempotency keys to Stripe operations.  
+- Implement webhook logic to keep Firestore in sync.  
+- Add email verification & password reset flows.  
+- Add robust usage metering tied to subscription entitlements.  
+- Enforce Firestore security rules for any future collections.  
+- Consider multi-tenant support (e.g., team worlds) with role-based access.
 
 ## 🏁 Quick Start
 

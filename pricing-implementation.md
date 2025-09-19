@@ -88,9 +88,12 @@ VITE_OPENAI_API_KEY=your_openai_api_key
 VITE_ANTHROPIC_API_KEY=your_anthropic_api_key
 
 # Stripe Integration
-VITE_STRIPE_PUBLIC_KEY=your_stripe_public_key
-VITE_STRIPE_SECRET_KEY=your_stripe_secret_key
+# Client (publishable) key must be prefixed with VITE_ so the frontend can access it.
+VITE_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+# Server secret key MUST NOT be prefixed with VITE_. Set this in Vercel dashboard (Environment Variables) not exposed to client.
+STRIPE_SECRET_KEY=your_stripe_secret_key
 VITE_APP_URL=http://localhost:5173
+VITE_API_BASE_URL=http://localhost:3000/api
 
 # Upstash Redis (for rate limiting)
 VITE_UPSTASH_REDIS_REST_URL=your_upstash_redis_rest_url
@@ -99,6 +102,8 @@ VITE_UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_rest_token
 # Vercel Blob Storage
 VITE_BLOB_READ_WRITE_TOKEN=your_blob_read_write_token
 ```
+
+> Note: If you previously used `VITE_STRIPE_SECRET_KEY` or `VITE_STRIPE_PUBLIC_KEY`, rename them to `STRIPE_SECRET_KEY` (server) and `VITE_STRIPE_PUBLISHABLE_KEY` (client) respectively. The 500 error during checkout session creation usually indicates the serverless function received an empty or invalid `STRIPE_SECRET_KEY`.
 
 ## Database Schema
 

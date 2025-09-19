@@ -5,6 +5,7 @@ import { Notifications } from '@mantine/notifications'
 import { ModalsProvider } from '@mantine/modals'
 import './index.css'
 import App from './App.tsx'
+import { AuthProvider } from './context/AuthContext'
 import { StripeProvider } from './components/StripeProvider'
 
 // Import Mantine styles
@@ -15,18 +16,19 @@ import '@mantine/tiptap/styles.css'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <StripeProvider>
-      <MantineProvider>
-        <ModalsProvider
-          modalProps={{
-            centered: true,
-            overlayProps: { backgroundOpacity: 0.55, blur: 3 },
-          }}
-        >
-          <Notifications />
-
-          <App />
-        </ModalsProvider>
-      </MantineProvider>
+      <AuthProvider>
+        <MantineProvider>
+          <ModalsProvider
+            modalProps={{
+              centered: true,
+              overlayProps: { backgroundOpacity: 0.55, blur: 3 },
+            }}
+          >
+            <Notifications />
+            <App />
+          </ModalsProvider>
+        </MantineProvider>
+      </AuthProvider>
     </StripeProvider>
   </StrictMode>
 )

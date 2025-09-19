@@ -88,8 +88,18 @@ export const stripeApi = {
           cancelUrl: `${window.location.origin}/pricing`,
         }),
       })
-
-      if (!response.ok) throw new Error('Failed to create checkout session')
+      if (!response.ok) {
+        let detail: any = null
+        try {
+          detail = await response.json()
+        } catch {
+          // ignore parse failure
+        }
+        const serverMessage = detail?.error || detail?.message
+        throw new Error(
+          `Failed to create checkout session${serverMessage ? `: ${serverMessage}` : ''}`
+        )
+      }
       return response.json()
     } catch (error) {
       console.error('Error creating checkout session:', error)
@@ -119,6 +129,41 @@ export const stripeApi = {
     } catch (error) {
       console.error('Error cancelling subscription:', error)
       return false
+    }
+  },
+  // Demo auth (ephemeral) - do not use in production
+  signup: async (
+    email: string,
+    password: string
+  ): Promise<{ email: string; stripeCustomerId: string } | null> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth-signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
+      if (!response.ok) return null
+      return response.json()
+    } catch (e) {
+      console.error('Signup failed', e)
+      return null
+    }
+  },
+  login: async (
+    email: string,
+    password: string
+  ): Promise<{ email: string; stripeCustomerId: string } | null> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth-login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
+      if (!response.ok) return null
+      return response.json()
+    } catch (e) {
+      console.error('Login failed', e)
+      return null
     }
   },
 }
